@@ -9,6 +9,7 @@
   <PropertyGroup>
     <PackageId>DevSpectorLibrary</PackageId>
     <Version>1.0.2</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>CIRCULARKA</Authors>
     <Company>CIRCULARKA</Company>
   </PropertyGroup>
