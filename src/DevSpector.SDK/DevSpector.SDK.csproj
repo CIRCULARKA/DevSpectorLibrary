@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>DevSpectorLibrary</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.2</Version>
     <Authors>CIRCULARKA</Authors>
     <Company>CIRCULARKA</Company>
   </PropertyGroup>
