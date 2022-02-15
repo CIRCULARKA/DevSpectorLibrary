@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
+    <None Include="../../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,8 +9,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>DevSpectorLibrary</PackageId>
-    <Version>1.0.2</Version>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>1.0.3</Version>
     <Authors>CIRCULARKA</Authors>
     <Company>CIRCULARKA</Company>
   </PropertyGroup>
