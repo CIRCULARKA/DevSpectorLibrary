@@ -7,6 +7,8 @@ namespace DevSpector.SDK
 {
     public class JsonProvider : IRawDataProvider
     {
+        private readonly Uri _host;
+
         private Uri _pathToDevices;
 
         private Uri _pathToUsers;
@@ -21,21 +23,21 @@ namespace DevSpector.SDK
         {
             _client = new HttpClient();
 
-            ConfigureDefaultHost();
+            _host = BuildDefaultHost();
 
             BuildEndpointPath();
         }
 
-        public JsonProvider(Uri host)
+        public JsonProvider(string hostname)
         {
             _client = new HttpClient();
 
-            Host = host;
+            _host = BuildHostFrom(hostname);
 
             BuildEndpointPath();
         }
 
-        public Uri Host { get; set; }
+        public Uri Host => _host;
 
         public Task<string> GetDevicesAsync(string accessToken) =>
             GetContentFromUriAsync(_pathToDevices.AbsoluteUri, accessToken);
@@ -69,13 +71,26 @@ namespace DevSpector.SDK
             return await response.Content.ReadAsStringAsync();
         }
 
-        private void ConfigureDefaultHost()
+        private Uri BuildDefaultHost()
         {
-            var uriBuilder = new UriBuilder();
-            uriBuilder.Port = 5000;
+            var uriBuilder = CreateHostBuilder();
             uriBuilder.Host = "localhost";
-            uriBuilder.Scheme = "http";
-            Host = uriBuilder.Uri;
+            return uriBuilder.Uri;
+        }
+
+        private Uri BuildHostFrom(string hostname)
+        {
+            var uriBuilder = CreateHostBuilder();
+            uriBuilder.Host = hostname;
+            return uriBuilder.Uri;
+        }
+
+        private UriBuilder CreateHostBuilder()
+        {
+            var builder = new UriBuilder();
+            builder.Port = 5000;
+            builder.Scheme= "http";
+            return builder;
         }
 
         private Uri BuildUriWithHostBaseAndPath(string path)
