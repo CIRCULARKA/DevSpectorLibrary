@@ -19,5 +19,3 @@ jobs:
       run: dotnet restore
     - name: Build SDK
       run: dotnet build -c Release --no-restore
-    - name: Publish to NuGet
-      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API}}
