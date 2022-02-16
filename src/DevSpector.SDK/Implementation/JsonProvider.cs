@@ -37,6 +37,15 @@ namespace DevSpector.SDK
             BuildEndpointPath();
         }
 
+        public JsonProvider(string hostname, HttpClient client)
+        {
+            _client = client;
+
+            _host = BuildHostFrom(hostname);
+
+            BuildEndpointPath();
+        }
+
         public Uri Host => _host;
 
         public Task<string> GetDevicesAsync(string accessToken) =>
