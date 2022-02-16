@@ -59,7 +59,7 @@ namespace DevSpector.Tests.Server.SDK
 		}
 
 		[Fact]
-		public async void AreDevicesDeserializeProperly()
+		public async void AreDevicesDeserializedProperly()
 		{
 			// Arrange
 			var provider = new DevicesProvider(_mockDataProvider);
@@ -81,7 +81,7 @@ namespace DevSpector.Tests.Server.SDK
 						"4.4.4.4",
 					},
 					null
-				),
+				)
 			};
 
 			// Act
