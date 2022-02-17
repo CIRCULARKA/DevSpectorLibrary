@@ -41,11 +41,14 @@ namespace DevSpector.SDK.Authorization
         private Uri BuildTargetEndpoint(string login, string password)
         {
             var builder = new UriBuilder();
-            builder.Port = 5000;
+
+            if (_hostname == "localhost")
+                builder.Port = 5000;
+
             builder.Host = _hostname;
             builder.Path = _path;
             builder.Query = $"login={login}&password={password}";
-            builder.Scheme = "http";
+            builder.Scheme = "https";
 
             return builder.Uri;
         }
