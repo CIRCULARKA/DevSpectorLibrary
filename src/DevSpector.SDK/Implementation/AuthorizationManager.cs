@@ -9,16 +9,17 @@ namespace DevSpector.SDK.Authorization
 {
     public class AuthorizationManager : IAuthorizationManager
     {
-        private readonly string _host = "localhost";
+        private readonly string _hostname;
 
         private readonly string _path = "api/users/authorize";
 
-        private readonly HttpClient _client;
+        private readonly HttpClient _client = new HttpClient();
 
-        public AuthorizationManager()
-        {
-            _client = new HttpClient();
-        }
+        public AuthorizationManager() =>
+            _hostname = "localhost";
+
+        public AuthorizationManager(string hostname) =>
+            _hostname = hostname;
 
         public async Task<User> TrySignIn(string login, string password)
         {
@@ -41,7 +42,7 @@ namespace DevSpector.SDK.Authorization
         {
             var builder = new UriBuilder();
             builder.Port = 5000;
-            builder.Host = _host;
+            builder.Host = _hostname;
             builder.Path = _path;
             builder.Query = $"login={login}&password={password}";
             builder.Scheme = "http";
