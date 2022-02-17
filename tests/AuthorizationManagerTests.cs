@@ -8,30 +8,22 @@ namespace DevSpector.Tests.Common.SDK.Authorization
 {
 	public class AuthorizationManagerTests
     {
+        private readonly string _hostname = "devspector.herokuapp.com";
+
         [Fact]
         public async Task CanGetUser()
         {
             // Arrange
-            var manager = new AuthorizationManager();
+            var manager = new AuthorizationManager(_hostname);
 
-            var expectedLogin = "TestAdministrator";
-            var expectedGroup = "Администратор";
-            var expectedAccessToken = "2d436de5-ca4c-441f-9708-c5e5f955d955";
+            var expectedLogin = "noname";
 
-            var password = "Admin1!";
-
-            var expected = new User(expectedAccessToken, expectedLogin, expectedGroup);
+            var password = "no";
 
             // Act
-            var actual = await manager.TrySignIn(expectedLogin, password);
-
-            // Assert
-            Assert.Equal(expected.AccessToken, actual.AccessToken);
-            Assert.Equal(expected.Login, actual.Login);
-            Assert.Equal(expected.Group, actual.Group);
-
-            await Assert.ThrowsAsync<ArgumentException>(
-                async () => await manager.TrySignIn(expectedLogin, password + "1")
+            await Assert.ThrowsAsync(
+                typeof(ArgumentException),
+                async () => await manager.TrySignIn(expectedLogin, password)
             );
         }
     }
