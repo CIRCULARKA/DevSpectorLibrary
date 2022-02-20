@@ -54,7 +54,7 @@ namespace DevSpector.SDK
             for (int i = 0; i < parameters.Count; i++)
             {
                 var pair = parameters.ElementAt(i);
-                query.Append($"{pair.Key}={pair.Key}");
+                query.Append($"{pair.Key}={pair.Value}");
                 if (i < parameters.Count - 1)
                     query.Append("&");
             }
