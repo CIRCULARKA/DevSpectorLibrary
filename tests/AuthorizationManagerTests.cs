@@ -38,8 +38,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             var password = "no";
 
             // Act & Assert
-            await Assert.ThrowsAsync(
-                typeof(ArgumentException),
+            await Assert.ThrowsAsync<ArgumentException>(
                 async () => await manager.TrySignIn(expectedLogin, password)
             );
         }
