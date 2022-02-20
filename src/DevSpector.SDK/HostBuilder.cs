@@ -35,13 +35,17 @@ namespace DevSpector.SDK
             return buidler.Uri;
         }
 
-        public Uri BuildTargetEndpoint(string path, Dictionary<string, string> parameters)
+        public Uri BuildTargetEndpoint(string path, Dictionary<string, string> parameters = null)
         {
             var builder = new UriBuilder();
 
             builder.Host = Host.Host;
             builder.Port = Host.Port;
+            builder.Scheme = Host.Scheme;
             builder.Path = path;
+
+            if (parameters == null)
+                return builder.Uri;
 
             // Build query upon dictionary parameters
             // by using key as parameter name and value as parameter value
@@ -54,8 +58,6 @@ namespace DevSpector.SDK
                 if (i < parameters.Count - 1)
                     query.Append("&");
             }
-
-            builder.Scheme = Host.Scheme;
 
             return builder.Uri;
         }
