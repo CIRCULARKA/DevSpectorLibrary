@@ -5,8 +5,6 @@ namespace DevSpector.SDK
 {
 	public interface IRawDataProvider
 	{
-		Uri Host { get; }
-
 		Task<string> GetDevicesAsync(string accessToken);
 
 		Task<string> GetUsersAsync(string accessToken);
