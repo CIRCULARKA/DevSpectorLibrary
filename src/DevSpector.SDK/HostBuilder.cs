@@ -59,6 +59,8 @@ namespace DevSpector.SDK
                     query.Append("&");
             }
 
+            builder.Query = query.ToString();
+
             return builder.Uri;
         }
     }
