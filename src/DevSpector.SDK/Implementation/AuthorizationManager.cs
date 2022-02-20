@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,21 +14,20 @@ namespace DevSpector.SDK.Authorization
 
         private readonly HttpClient _client = new HttpClient();
 
-        public AuthorizationManager(int port)
-        {
-            Host = CreateHost(port: port);
-        }
+        private readonly IHostBuilder _builder;
 
-        public AuthorizationManager(string hostname, int port = 443)
+        public AuthorizationManager(IHostBuilder builder)
         {
-            Host = CreateHost(hostname, port, "https");
+            _builder = builder;
         }
-
-        public Uri Host { get; private set; }
 
         public async Task<User> TrySignIn(string login, string password)
         {
-            var targetEndpoint = BuildTargetEndpoint(login, password);
+            var parameters = new Dictionary<string, string>() {
+                { nameof(login), login },
+                { nameof(password), password },
+            };
+            var targetEndpoint = _builder.BuildTargetEndpoint(_path, parameters);
 
             var response = await _client.GetAsync(targetEndpoint);
 
@@ -40,30 +40,6 @@ namespace DevSpector.SDK.Authorization
             );
 
             return result;
-        }
-
-        private Uri CreateHost(string hostname = "localhost", int port = 443, string scheme = "http")
-        {
-            var buidler = new UriBuilder();
-
-            buidler.Host = hostname;
-            buidler.Port = port;
-            buidler.Scheme = scheme;
-
-            return buidler.Uri;
-        }
-
-        private Uri BuildTargetEndpoint(string login, string password)
-        {
-            var builder = new UriBuilder();
-
-            builder.Host = Host.Host;
-            builder.Port = Host.Port;
-            builder.Path = _path;
-            builder.Query = $"login={login}&password={password}";
-            builder.Scheme = Host.Scheme;
-
-            return builder.Uri;
         }
     }
 }
