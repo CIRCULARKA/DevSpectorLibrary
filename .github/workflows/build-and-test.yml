@@ -1,13 +1,10 @@
-name: Build
+name: .NET
 on:
-  push:
-    branches-ignore:
-    - release*
   pull_request:
     branches-ignore:
-    - release
+    - release*
 jobs:
-  Build:
+  Build-And-Test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -19,3 +16,5 @@ jobs:
       run: dotnet restore
     - name: Build SDK
       run: dotnet build -c Release --no-restore
+    - name: Test
+      run: dotnet test tests
