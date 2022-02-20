@@ -19,29 +19,36 @@ namespace DevSpector.SDK
 
         private readonly HttpClient _client;
 
-        public JsonProvider()
+        private readonly int _localhostPort;
+
+        /// <summary>
+        /// Creates provider that targets to localhost
+        /// </summary>
+        public JsonProvider(int port)
         {
+            _localhostPort = port;
+
             _client = new HttpClient();
 
-            _host = BuildDefaultHost();
+            _host = BuildDefaultHost(port);
 
             BuildEndpointPath();
         }
 
-        public JsonProvider(string hostname)
+        public JsonProvider(string hostname, int? port = null)
         {
             _client = new HttpClient();
 
-            _host = BuildHostFrom(hostname);
+            _host = BuildHostFrom(hostname, port);
 
             BuildEndpointPath();
         }
 
-        public JsonProvider(string hostname, HttpClient client)
+        public JsonProvider(string hostname, HttpClient client, int? port = null)
         {
             _client = client;
 
-            _host = BuildHostFrom(hostname);
+            _host = BuildHostFrom(hostname, port);
 
             BuildEndpointPath();
         }
@@ -80,25 +87,26 @@ namespace DevSpector.SDK
             return await response.Content.ReadAsStringAsync();
         }
 
-        private Uri BuildDefaultHost()
+        private Uri BuildDefaultHost(int port)
         {
-            var uriBuilder = CreateHostBuilder();
+            var uriBuilder = CreateHostBuilder(_localhostPort);
             uriBuilder.Host = "localhost";
             return uriBuilder.Uri;
         }
 
-        private Uri BuildHostFrom(string hostname)
+        private Uri BuildHostFrom(string hostname, int? port)
         {
-            var uriBuilder = CreateHostBuilder();
+            var uriBuilder = CreateHostBuilder(port, "https");
             uriBuilder.Host = hostname;
             return uriBuilder.Uri;
         }
 
-        private UriBuilder CreateHostBuilder()
+        private UriBuilder CreateHostBuilder(int? port, string scheme = "http")
         {
             var builder = new UriBuilder();
-            builder.Port = 5000;
-            builder.Scheme= "http";
+            if (port != null)
+                builder.Port = (int)port;
+            builder.Scheme = scheme;
             return builder;
         }
 
