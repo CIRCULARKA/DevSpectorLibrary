@@ -11,6 +11,28 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         private readonly string _hostname = "dev-devspector.herokuapp.com";
 
         [Fact]
+        public void IsHostBuiltProperly()
+        {
+            // Arrange
+            var expectedHost1 = "testhost";
+            var expectedHost2 = "localhost";
+
+            var expectedPort1 = 5000;
+            var expectedPort2 = 5043;
+
+            // Act
+            var manager1 = new AuthorizationManager(expectedHost1, expectedPort1);
+            var manager2 = new AuthorizationManager(expectedPort2);
+
+            // Assert
+            Assert.Equal(expectedHost1, manager1.Host.Host);
+            Assert.Equal(expectedPort1, manager1.Host.Port);
+
+            Assert.Equal(expectedHost2, manager2.Host.Host);
+            Assert.Equal(expectedPort2, manager2.Host.Port);
+        }
+
+        [Fact]
         public async Task CanGetUser()
         {
             // Arrange
