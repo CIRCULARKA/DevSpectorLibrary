@@ -7,6 +7,6 @@ namespace DevSpector.SDK
     {
         Uri Host { get; }
 
-        Uri BuildTargetEndpoint(string path, Dictionary<string, string> parameters);
+        Uri BuildTargetEndpoint(string path, Dictionary<string, string> parameters = null);
     }
 }
