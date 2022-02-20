@@ -25,7 +25,7 @@ namespace DevSpector.SDK.Authorization
         {
             var parameters = new Dictionary<string, string>() {
                 { nameof(login), login },
-                { nameof(password), password },
+                { nameof(password), password }
             };
             var targetEndpoint = _builder.BuildTargetEndpoint(_path, parameters);
 
