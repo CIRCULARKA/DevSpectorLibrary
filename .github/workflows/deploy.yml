@@ -19,4 +19,4 @@ jobs:
     - name: Test
       run: dotnet test tests
     - name: Publish to NuGet
-      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API}}
+      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API}} --skip-duplicate
