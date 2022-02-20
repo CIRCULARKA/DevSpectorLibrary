@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using DevSpector.SDK;
 using DevSpector.SDK.Authorization;
-using DevSpector.SDK.Models;
 
 namespace DevSpector.Tests.Common.SDK.Authorization
 {
@@ -14,7 +14,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CanGetUser()
         {
             // Arrange
-            var manager = new AuthorizationManager(_hostname);
+            var manager = new AuthorizationManager(new HostBuilder(_hostname, scheme: "https"));
 
             var login = "root";
             var password = "123Abc!";
@@ -32,7 +32,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CantGetUser()
         {
             // Arrange
-            var manager = new AuthorizationManager(_hostname);
+            var manager = new AuthorizationManager(new HostBuilder(_hostname, scheme: "https"));
 
             var expectedLogin = "noname";
             var password = "no";

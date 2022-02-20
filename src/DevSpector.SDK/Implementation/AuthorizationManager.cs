@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,21 +10,24 @@ namespace DevSpector.SDK.Authorization
 {
     public class AuthorizationManager : IAuthorizationManager
     {
-        private readonly string _hostname;
-
         private readonly string _path = "api/users/authorize";
 
         private readonly HttpClient _client = new HttpClient();
 
-        public AuthorizationManager() =>
-            _hostname = "localhost";
+        private readonly IHostBuilder _builder;
 
-        public AuthorizationManager(string hostname) =>
-            _hostname = hostname;
+        public AuthorizationManager(IHostBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public async Task<User> TrySignIn(string login, string password)
         {
-            var targetEndpoint = BuildTargetEndpoint(login, password);
+            var parameters = new Dictionary<string, string>() {
+                { nameof(login), login },
+                { nameof(password), password }
+            };
+            var targetEndpoint = _builder.BuildTargetEndpoint(_path, parameters);
 
             var response = await _client.GetAsync(targetEndpoint);
 
@@ -36,21 +40,6 @@ namespace DevSpector.SDK.Authorization
             );
 
             return result;
-        }
-
-        private Uri BuildTargetEndpoint(string login, string password)
-        {
-            var builder = new UriBuilder();
-
-            if (_hostname == "localhost")
-                builder.Port = 5000;
-
-            builder.Host = _hostname;
-            builder.Path = _path;
-            builder.Query = $"login={login}&password={password}";
-            builder.Scheme = "https";
-
-            return builder.Uri;
         }
     }
 }

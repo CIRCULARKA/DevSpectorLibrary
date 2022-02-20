@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -6,30 +6,28 @@ namespace DevSpector.SDK
 {
     public class DevicesModifier
     {
+        private readonly string _path = "api/devices/create";
+
         private readonly HttpClient _client = new HttpClient();
 
-        private readonly string _targetHost;
+        private readonly IHostBuilder _builder;
 
-        public DevicesModifier() =>
-            _targetHost = "localhost";
-
-        public DevicesModifier(string hostname) =>
-            _targetHost = hostname;
+        public DevicesModifier(IHostBuilder builder) =>
+            _builder = builder;
 
 		public async Task CreateDevice(string networkName, string inventoryNumber, string type)
 		{
-            var requestUrlBuilder = new UriBuilder();
+            var parameters = new Dictionary<string, string> {
+                { nameof(inventoryNumber), inventoryNumber },
+                { nameof(networkName), networkName },
+                { nameof(type), type }
+            };
 
-            if (_targetHost == "localhost")
-                requestUrlBuilder.Port = 5000;
-
-            requestUrlBuilder.Scheme = "https";
-            requestUrlBuilder.Host = _targetHost;
-            requestUrlBuilder.Query = $"networkName={networkName}&inventoryNumber={inventoryNumber}&type={type}";
+            var requestUri = _builder.BuildTargetEndpoint(_path, parameters);
 
             var request = new HttpRequestMessage(
                 HttpMethod.Post,
-                requestUrlBuilder.Uri
+                requestUri
             );
 
             await _client.SendAsync(request);
