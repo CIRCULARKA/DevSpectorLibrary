@@ -88,7 +88,7 @@ namespace DevSpector.Tests.Server.SDK
 			var actual = (await provider.GetDevicesAsync(Guid.Empty.ToString())).ToList();
 
 			// Assert
-			Assert.Equal(expected.Count(), expected.Count());
+			Assert.Equal(expected.Count(), actual.Count());
 
 			for (int i = 0; i < expected.Count(); i++)
 			{
