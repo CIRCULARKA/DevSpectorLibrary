@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using DevSpector.SDK.Authorization;
 
 namespace DevSpector.SDK.Tests
 {
@@ -9,7 +10,26 @@ namespace DevSpector.SDK.Tests
         private readonly string _host = "dev-devspector.herokuapp.com";
 
         [Fact]
-        public async void ThrowsWrongAPI()
+        public async void CanLoadFromServer()
+        {
+            // Arrange
+            var builder = new HostBuilder(_host, scheme: "https");
+
+            var provider = new JsonProvider(builder);
+
+            var authManager = new AuthorizationManager(builder);
+            var accessToken = (await authManager.TrySignIn("root", "123Abc!")).AccessToken;
+
+            var actions = new Func<Task<string>>[] {
+                async () => await provider.GetDevicesAsync(accessToken),
+                async () => await provider.GetFreeIPAsync(accessToken),
+                async () => await provider.GetHousingsAsync(accessToken),
+                async () => await provider.GetUsersAsync(accessToken)
+            };
+        }
+
+        [Fact]
+        public async void ThrowsOnWrongAPI()
         {
             // Arrange
             var provider = new JsonProvider(new HostBuilder(_host, scheme: "https"));
