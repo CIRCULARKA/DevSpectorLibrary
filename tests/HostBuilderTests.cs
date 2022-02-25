@@ -34,8 +34,8 @@ namespace DevSpector.Tests.SDK
             Assert.Equal(expectedScheme, actualEndpoint.Scheme);
             Assert.Equal(expectedPath, actualEndpoint.LocalPath);
 
-            Assert.Contains(actualEndpoint.Query, expectedParameter1);
-            Assert.Contains(actualEndpoint.Query, expectedParameter2);
+            Assert.Contains(expectedParameter1, actualEndpoint.Query);
+            Assert.Contains(expectedParameter2, actualEndpoint.Query);
         }
     }
 }
