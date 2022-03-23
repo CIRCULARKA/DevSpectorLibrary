@@ -20,6 +20,7 @@ namespace DevSpector.SDK
             _client = new HttpClient();
             _builder = builder;
 
+            _serializationOptions = new JsonSerializerOptions();
             _serializationOptions.PropertyNameCaseInsensitive = true;
         }
 
