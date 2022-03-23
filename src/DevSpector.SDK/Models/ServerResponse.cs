@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace DevSpector.SDK.Authorization
+namespace DevSpector.SDK.Models
 {
     public class ServerResponse
     {
