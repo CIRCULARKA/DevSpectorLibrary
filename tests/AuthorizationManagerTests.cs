@@ -13,6 +13,10 @@ namespace DevSpector.Tests.Common.SDK.Authorization
     {
         private readonly string _hostname = "dev-devspector.herokuapp.com";
 
+        private readonly string _testUserLogin = "root";
+
+        private readonly string _testUserPassword = "123Abc!";
+
         [Fact]
         public async Task CanGetUser()
         {
@@ -20,22 +24,40 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             var jsonProvider = new JsonProvider(new HostBuilder(_hostname, scheme: "https"));
             var manager = new AuthorizationManager(jsonProvider);
 
-            var login = "root";
-            var password = "123Abc!";
-
             User expectedUser = await GetFromServerAsync<User>(
                 "https://" +
                 _hostname +
-                $"/api/users/authorize?login={login}&password={password}"
+                $"/api/users/authorize?login={_testUserLogin}&password={_testUserPassword}"
             );
 
             // Act
-            var actualUser = await manager.TryToSignInAsync(login, password);
+            var actualUser = await manager.TryToSignInAsync(_testUserLogin, _testUserPassword);
 
             // Assert
             Assert.Equal(expectedUser.Login, actualUser.Login);
             Assert.Equal(expectedUser.AccessToken, actualUser.AccessToken);
             Assert.Equal(expectedUser.Group, actualUser.Group);
+        }
+
+        [Fact]
+        public async Task CantGetUser()
+        {
+            // Arrange
+            var jsonProvider = new JsonProvider(new HostBuilder(_hostname, scheme: "https"));
+            var manager = new AuthorizationManager(jsonProvider);
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await manager.TryToSignInAsync("wrongLogin", "wrongPassword")
+            );
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await manager.TryToSignInAsync("wrongLogin", _testUserPassword)
+            );
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await manager.TryToSignInAsync(_testUserPassword, "wrongPassword")
+            );
         }
 
         private async Task<T> GetFromServerAsync<T>(string address)
