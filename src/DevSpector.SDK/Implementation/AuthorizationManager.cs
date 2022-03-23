@@ -24,7 +24,7 @@ namespace DevSpector.SDK.Authorization
                 { nameof(password), password }
             };
 
-            var response = await _provider.GetDataFromServer(
+            var response = await _provider.GetDataFromServerAsync(
                 path: "api/users/authorize",
                 parameters: parameters,
                 accessToken: null

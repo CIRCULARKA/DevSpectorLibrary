@@ -16,7 +16,7 @@ namespace DevSpector.SDK
 
 		public async Task<List<User>> GetUsersAsync(string accessToken)
 		{
-			var response = await _provider.GetDataFromServer("api/users", accessToken);
+			var response = await _provider.GetDataFromServerAsync("api/users", accessToken);
 
 			if (!response.IsSucceed)
 				throw new InvalidOperationException($"Could not get users from server: error {response.ResponseStatusCode}");
@@ -26,7 +26,7 @@ namespace DevSpector.SDK
 
 		public async Task<List<UserGroup>> GetUserGroups(string accessToken)
 		{
-			var response = await _provider.GetDataFromServer("api/users/groups", accessToken);
+			var response = await _provider.GetDataFromServerAsync("api/users/groups", accessToken);
 
 			if (!response.IsSucceed)
 				throw new InvalidOperationException($"Could not get user groups from server: error {response.ResponseStatusCode}");
