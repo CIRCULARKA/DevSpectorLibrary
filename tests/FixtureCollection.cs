@@ -2,6 +2,6 @@ using Xunit;
 
 namespace DevSpector.Tests
 {
-    [CollectionDefinition(nameof(ServerConnectionFixture))]
+    [CollectionDefinition(nameof(FixtureCollection))]
     public class FixtureCollection : ICollectionFixture<ServerConnectionFixture> { }
 }
