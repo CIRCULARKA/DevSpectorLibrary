@@ -26,7 +26,7 @@ namespace DevSpector.SDK
         public TOut Deserialize<TOut>(string json) =>
             JsonSerializer.Deserialize<TOut>(json, _serializationOptions);
 
-        public async Task<ServerResponse> GetDataFromServer(string path, string accessToken = null, Dictionary<string, string> parameters = null)
+        public async Task<ServerResponse> GetDataFromServerAsync(string path, string accessToken = null, Dictionary<string, string> parameters = null)
         {
             Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
 
