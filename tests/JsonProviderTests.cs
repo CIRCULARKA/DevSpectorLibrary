@@ -1,54 +1,68 @@
-using System;
-using System.Threading.Tasks;
+using System.Net;
 using Xunit;
-using DevSpector.SDK.Authorization;
+using DevSpector.SDK;
+using DevSpector.SDK.Models;
 
-namespace DevSpector.SDK.Tests
+namespace DevSpector.Tests
 {
+    [Collection(nameof(FixtureCollection))]
     public class JsonProviderTests
     {
+        private readonly ServerConnectionFixture _connectionFixture;
+
         private readonly string _host = "dev-devspector.herokuapp.com";
 
-        [Fact]
-        public async void CanLoadFromServer()
+        private readonly string[] _endpoints = new string[] {
+            "api/users",
+            "api/users/groups",
+            "api/devices",
+            "api/devices/types",
+            "api/location/housings",
+        };
+
+        private readonly IHostBuilder _hostBuilder;
+
+        public JsonProviderTests(ServerConnectionFixture conFix)
         {
-            // Arrange
-            var builder = new HostBuilder(_host, scheme: "https");
+            _connectionFixture = conFix;
 
-            var provider = new JsonProvider(builder);
-
-            var authManager = new AuthorizationManager(builder);
-            var accessToken = (await authManager.TrySignIn("root", "123Abc!")).AccessToken;
-
-            var actions = new Func<Task<string>>[] {
-                async () => await provider.GetDevicesAsync(accessToken),
-                async () => await provider.GetFreeIPAsync(accessToken),
-                async () => await provider.GetHousingsAsync(accessToken),
-                async () => await provider.GetUsersAsync(accessToken)
-            };
+            _hostBuilder = new HostBuilder(_host, scheme: "https");
         }
 
         [Fact]
-        public async void ThrowsOnWrongAPI()
+        public async void ReturnsObjects()
         {
             // Arrange
-            var provider = new JsonProvider(new HostBuilder(_host, scheme: "https"));
+            var provider = new JsonProvider(_hostBuilder);
 
-            var actions = new Func<Task<string>>[] {
-                async () => await provider.GetDevicesAsync("wrongToken"),
-                async () => await provider.GetFreeIPAsync("wrongToken"),
-                async () => await provider.GetHousingAsync(Guid.Empty, "wrongToken"),
-                async () => await provider.GetHousingsAsync("wrongToken"),
-                async () => await provider.GetUsersAsync("wrongToken")
-            };
+            User user = await _connectionFixture.GetAuthorizedUser();
+            string accessToken = user.AccessToken;
 
             // Assert
-            await Assert.ThrowsAsync<ArgumentException>(
-                async () => {
-                    foreach (var action in actions)
-                        await action.Invoke();
-                }
-            );
+            foreach (var endpoint in _endpoints)
+            {
+                ServerResponse response = await provider.GetDataFromServerAsync(endpoint, accessToken);
+
+                Assert.Equal(HttpStatusCode.OK, response.ResponseStatusCode);
+                Assert.True(response.IsSucceed);
+                Assert.NotNull(response.ResponseContent);
+            }
+        }
+
+        [Fact]
+        public async void CantGetDataWithoutAccessKey()
+        {
+            // Arrange
+            var provider = new JsonProvider(_hostBuilder);
+
+            // Assert
+            foreach (var endpoint in _endpoints)
+            {
+                var response = await provider.GetDataFromServerAsync(endpoint);
+
+                Assert.Equal(HttpStatusCode.Unauthorized, response.ResponseStatusCode);
+                Assert.False(response.IsSucceed);
+            }
         }
     }
 }
