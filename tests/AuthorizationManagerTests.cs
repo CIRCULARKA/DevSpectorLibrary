@@ -1,7 +1,10 @@
 using System;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using DevSpector.SDK;
+using DevSpector.SDK.Models;
 using DevSpector.SDK.Authorization;
 
 namespace DevSpector.Tests.Common.SDK.Authorization
@@ -14,32 +17,36 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CanGetUser()
         {
             // Arrange
-            var manager = new AuthorizationManager(new HostBuilder(_hostname, scheme: "https"));
+            var jsonProvider = new JsonProvider(new HostBuilder(_hostname, scheme: "https"));
+            var manager = new AuthorizationManager(jsonProvider);
 
             var login = "root";
             var password = "123Abc!";
 
+            User expectedUser = await GetFromServerAsync<User>(
+                "https://" +
+                _hostname +
+                $"/api/users/authorize?login={login}&password={password}"
+            );
+
             // Act
-            var result = await manager.TrySignIn(login, password);
+            var actualUser = await manager.TryToSignInAsync(login, password);
 
             // Assert
-            Assert.Equal("root", result.Login);
-            Assert.NotEmpty(result.Group);
-            Assert.NotEmpty(result.AccessToken);
+            Assert.Equal(expectedUser.Login, actualUser.Login);
+            Assert.Equal(expectedUser.AccessToken, actualUser.AccessToken);
+            Assert.Equal(expectedUser.Group, actualUser.Group);
         }
 
-        [Fact]
-        public async Task CantGetUser()
+        private async Task<T> GetFromServerAsync<T>(string address)
         {
-            // Arrange
-            var manager = new AuthorizationManager(new HostBuilder(_hostname, scheme: "https"));
+            var client = new HttpClient();
+            var response = await client.GetAsync(address);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
-            var expectedLogin = "noname";
-            var password = "no";
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(
-                async () => await manager.TrySignIn(expectedLogin, password)
+            return JsonSerializer.Deserialize<T>(
+                responseContent,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
         }
     }
