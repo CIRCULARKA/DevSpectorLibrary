@@ -1,18 +1,13 @@
-using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK
 {
 	public interface IRawDataProvider
 	{
-		Task<string> GetDevicesAsync(string accessToken);
+        TOut Deserialize<TOut>(string json);
 
-		Task<string> GetUsersAsync(string accessToken);
-
-		Task<string> GetFreeIPAsync(string accessToken);
-
-		Task<string> GetHousingsAsync(string accessToken);
-
-		Task<string> GetHousingAsync(Guid housingID, string accessToken);
+        Task<ServerResponse> GetDataFromServer(string path, string accessToken = null, Dictionary<string, string> parameters = null);
 	}
 }

@@ -10,36 +10,32 @@ namespace DevSpector.SDK.Authorization
 {
     public class AuthorizationManager : IAuthorizationManager
     {
-        private readonly string _path = "api/users/authorize";
+        private readonly IRawDataProvider _provider;
 
-        private readonly HttpClient _client = new HttpClient();
-
-        private readonly IHostBuilder _builder;
-
-        public AuthorizationManager(IHostBuilder builder)
+        public AuthorizationManager(IRawDataProvider provider)
         {
-            _builder = builder;
+            _provider = provider;
         }
 
-        public async Task<User> TrySignIn(string login, string password)
+        public async Task<User> TryToSignInAsync(string login, string password)
         {
             var parameters = new Dictionary<string, string>() {
                 { nameof(login), login },
                 { nameof(password), password }
             };
-            var targetEndpoint = _builder.BuildTargetEndpoint(_path, parameters);
 
-            var response = await _client.GetAsync(targetEndpoint);
-
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new ArgumentException("Wrong credentials");
-
-            var result = await JsonSerializer.DeserializeAsync<User>(
-                await response.Content.ReadAsStreamAsync(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            var response = await _provider.GetDataFromServer(
+                path: "api/users/authorize",
+                parameters: parameters,
+                accessToken: null
             );
 
-            return result;
+            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
+                throw new InvalidOperationException("Could not authorize on server: wrong credentials");
+            if (!response.IsSucceed)
+                throw new InvalidOperationException($"Could not authorize on server: error {response.ResponseStatusCode}");
+
+            return _provider.Deserialize<User>(response.ResponseContent);
         }
     }
 }

@@ -1,71 +1,54 @@
 ﻿using System;
-using System.Net;
+using System.Text.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK
 {
     public class JsonProvider : IRawDataProvider
     {
-        private Uri _pathToDevices;
-
-        private Uri _pathToUsers;
-
-        private Uri _pathToFreeIpAddresses;
-
-        private Uri _pathToHousings;
-
         private readonly HttpClient _client;
 
         private readonly IHostBuilder _builder;
 
+        private readonly JsonSerializerOptions _serializationOptions;
+
         public JsonProvider(IHostBuilder builder)
         {
+            _client = new HttpClient();
             _builder = builder;
 
-            _client = new HttpClient();
-
-            BuildEndpointPath();
+            _serializationOptions.PropertyNameCaseInsensitive = true;
         }
 
-        public Task<string> GetDevicesAsync(string accessToken) =>
-            GetContentFromUriAsync(_pathToDevices.AbsoluteUri, accessToken);
+        public TOut Deserialize<TOut>(string json) =>
+            JsonSerializer.Deserialize<TOut>(json, _serializationOptions);
 
-		public Task<string> GetUsersAsync(string acessToken) =>
-            GetContentFromUriAsync(_pathToUsers.AbsoluteUri, acessToken);
+        public async Task<ServerResponse> GetDataFromServer(string path, string accessToken = null, Dictionary<string, string> parameters = null)
+        {
+            Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
 
-        public Task<string> GetHousingsAsync(string accessToken) =>
-            GetContentFromUriAsync(_pathToHousings.AbsoluteUri, accessToken);
+            var response = await SendGetRequestAsync(requestUri, accessToken);
 
-        public Task<string> GetFreeIPAsync(string accessToken) =>
-            GetContentFromUriAsync(_pathToFreeIpAddresses.AbsoluteUri, accessToken);
+            return new ServerResponse(
+                response.StatusCode,
+                await response.Content.ReadAsStringAsync()
+            );
+        }
 
-        public Task<string> GetHousingAsync(Guid housingID, string accessToken) =>
-            GetContentFromUriAsync(_pathToHousings.AbsoluteUri + housingID, accessToken);
-
-        private async Task<string> GetContentFromUriAsync(string path, string accessToken)
+        private async Task<HttpResponseMessage> SendGetRequestAsync(Uri uri, string accessToken = null)
         {
             var request = new HttpRequestMessage {
-                RequestUri = new Uri(path),
+                RequestUri = uri,
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("API", accessToken);
+            if (accessToken != null)
+                request.Headers.Add("API", accessToken);
 
-            var response = await _client.SendAsync(request);
-
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                throw new ArgumentException("Wrong API");
-
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        private void BuildEndpointPath()
-        {
-            _pathToDevices = _builder.BuildTargetEndpoint("api/devices");
-            _pathToUsers = _builder.BuildTargetEndpoint("api/users");
-            _pathToFreeIpAddresses = _builder.BuildTargetEndpoint("api/free-ip/");
-            _pathToHousings = _builder.BuildTargetEndpoint("api/location/housings/");
+            return await _client.SendAsync(request);
         }
     }
 }
