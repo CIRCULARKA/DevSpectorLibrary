@@ -6,7 +6,7 @@ namespace DevSpector.Tests
 {
     public class ServerConnectionFixture
     {
-        private async Task<T> GetFromServerAsync<T>(string address)
+        public async Task<T> GetFromServerAsync<T>(string address)
         {
             var client = new HttpClient();
             var response = await client.GetAsync(address);
