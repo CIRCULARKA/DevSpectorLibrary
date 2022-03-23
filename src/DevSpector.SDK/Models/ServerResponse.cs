@@ -13,5 +13,11 @@ namespace DevSpector.SDK.Models
         public HttpStatusCode ResponseStatusCode { get; }
 
         public string ResponseContent { get; }
+
+        public bool IsSucceed =>
+            ResponseStatusCode == HttpStatusCode.OK ||
+            ResponseStatusCode == HttpStatusCode.Accepted ||
+            ResponseStatusCode == HttpStatusCode.Continue ||
+            ResponseStatusCode == HttpStatusCode.Found;
     }
 }
