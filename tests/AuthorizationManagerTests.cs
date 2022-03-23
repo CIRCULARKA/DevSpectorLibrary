@@ -1,6 +1,4 @@
 using System;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using DevSpector.SDK;
@@ -9,13 +7,21 @@ using DevSpector.SDK.Authorization;
 
 namespace DevSpector.Tests.Common.SDK.Authorization
 {
+    [Collection(nameof(FixtureCollection))]
 	public class AuthorizationManagerTests
     {
+        private readonly ServerConnectionFixture _connectionFixture;
+
         private readonly string _hostname = "dev-devspector.herokuapp.com";
 
         private readonly string _testUserLogin = "root";
 
         private readonly string _testUserPassword = "123Abc!";
+
+        public AuthorizationManagerTests(ServerConnectionFixture fixture)
+        {
+            _connectionFixture = fixture;
+        }
 
         [Fact]
         public async Task CanGetUser()
@@ -24,7 +30,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             var jsonProvider = new JsonProvider(new HostBuilder(_hostname, scheme: "https"));
             var manager = new AuthorizationManager(jsonProvider);
 
-            User expectedUser = await GetFromServerAsync<User>(
+            User expectedUser = await _connectionFixture.GetFromServerAsync<User>(
                 "https://" +
                 _hostname +
                 $"/api/users/authorize?login={_testUserLogin}&password={_testUserPassword}"
@@ -57,18 +63,6 @@ namespace DevSpector.Tests.Common.SDK.Authorization
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 await manager.TryToSignInAsync(_testUserPassword, "wrongPassword")
-            );
-        }
-
-        private async Task<T> GetFromServerAsync<T>(string address)
-        {
-            var client = new HttpClient();
-            var response = await client.GetAsync(address);
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            return JsonSerializer.Deserialize<T>(
-                responseContent,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
         }
     }
