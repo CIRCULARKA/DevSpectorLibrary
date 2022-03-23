@@ -7,5 +7,7 @@ namespace DevSpector.SDK
 	public interface IUsersProvider
 	{
 		Task<List<User>> GetUsersAsync(string accessToken);
+
+		Task<List<UserGroup>> GetUserGroups(string accessToken);
 	}
 }

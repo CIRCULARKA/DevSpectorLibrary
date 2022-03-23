@@ -1,4 +1,4 @@
-namespace DevSpector.SDK.Authorization
+namespace DevSpector.SDK.Models
 {
     public class UserGroup
     {
