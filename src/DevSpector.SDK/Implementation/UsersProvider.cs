@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -14,12 +15,24 @@ namespace DevSpector.SDK
 			_provider = provider;
 		}
 
-		public async Task<IEnumerable<User>> GetUsersAsync(string accessToken) =>
-			JsonSerializer.Deserialize<List<User>>(
-				await _provider.GetUsersAsync(accessToken),
-				new JsonSerializerOptions() {
-					PropertyNameCaseInsensitive = true
-				}
-			);
+		public async Task<List<User>> GetUsersAsync(string accessToken)
+		{
+			var response = await _provider.GetDataFromServer("api/users", accessToken);
+
+			if (!response.IsSucceed)
+				throw new InvalidOperationException($"Could not get users from server: error {response.ResponseStatusCode}");
+
+			return _provider.Deserialize<List<User>>(response.ResponseContent);
+		}
+
+		public async Task<List<UserGroup>> GetUserGroups(string accessToken)
+		{
+			var response = await _provider.GetDataFromServer("api/users/groups", accessToken);
+
+			if (!response.IsSucceed)
+				throw new InvalidOperationException($"Could not get user groups from server: error {response.ResponseStatusCode}");
+
+			return _provider.Deserialize<List<UserGroup>>(response.ResponseContent);
+		}
 	}
 }
