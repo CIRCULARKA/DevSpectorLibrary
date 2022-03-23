@@ -9,64 +9,43 @@ using DevSpector.SDK.Models;
 
 namespace DevSpector.Tests.Server.SDK
 {
+	[Collection(nameof(FixtureCollection))]
 	public class UsersProviderTests
 	{
-		private readonly IRawDataProvider _mockDataProvider;
+		private readonly ServerConnectionFixture _connectionFixture;
 
-		private readonly Guid[] _mockUsersGuids;
+		private readonly IUsersProvider _usersProvider;
 
-		public UsersProviderTests()
+		private readonly IRawDataProvider _rawDataProvider;
+
+		public UsersProviderTests(ServerConnectionFixture conFix)
 		{
-			_mockUsersGuids = new Guid[] {
-				new Guid("16036105-5111-4420-8b26-a18deaeb8f9b"),
-				new Guid("ed8c1437-07fd-4ce8-beb2-aba831d05e31"),
-			};
+			_connectionFixture = conFix;
 
-			var moq = new Mock<IRawDataProvider>();
-			moq.Setup(provider => provider.GetUsersAsync(Guid.Empty.ToString())).
-				Returns(
-					Task.FromResult<string>(
-						@"[
-							{
-								""accessToken"": ""16036105-5111-4420-8b26-a18deaeb8f9b"",
-								""login"": ""login1"",
-								""group"": ""group1""
-							},
-							{
-								""accessToken"": ""ed8c1437-07fd-4ce8-beb2-aba831d05e31"",
-								""login"": ""login2"",
-								""group"": ""group2""
-							}
-						]"
-					)
-				);
-
-			_mockDataProvider = moq.Object;
+			_rawDataProvider = new JsonProvider(new HostBuilder(_connectionFixture.ServerHostname, scheme: "https"));
+			_usersProvider = new UsersProvider(_rawDataProvider);
 		}
 
 		[Fact]
-		public async void AreDevicesDeserializedProperly()
+		public async Task CanGetUsers()
 		{
 			// Arrange
-			var provider = new UsersProvider(_mockDataProvider);
+			User superUser = await _connectionFixture.GetAuthorizedUser();
 
-			var expected = new List<User>
-			{
-				new User(_mockUsersGuids[0].ToString(), "login1", "group1"),
-				new User(_mockUsersGuids[1].ToString(), "login2", "group2")
-			};
+			List<User> expectedUsers = await _connectionFixture.GetFromServerAsync<List<User>>(
+				$"{_connectionFixture.ServerFullAddress}/users?api={superUser.AccessToken}"
+			);
 
 			// Act
-			var actual = (await provider.GetUsersAsync(Guid.Empty.ToString())).ToList();
+			List<User> actualUsers = await _usersProvider.GetUsersAsync(superUser.AccessToken);
 
 			// Assert
-			Assert.Equal(expected.Count(), actual.Count());
-
-			for (int i = 0; i < expected.Count(); i++)
+			Assert.Equal(expectedUsers.Count, actualUsers.Count);
+			for (int i = 0; i < expectedUsers.Count; i++)
 			{
-				Assert.Equal(expected[i].Login, actual[i].Login);
-				Assert.Equal(expected[i].AccessToken, actual[i].AccessToken);
-				Assert.Equal(expected[i].Group, actual[i].Group);
+				Assert.Equal(expectedUsers[i].Login, actualUsers[i].Login);
+				Assert.Equal(expectedUsers[i].AccessToken, actualUsers[i].AccessToken);
+				Assert.Equal(expectedUsers[i].Group, actualUsers[i].Group);
 			}
 		}
 	}
