@@ -14,6 +14,12 @@ namespace DevSpector.Tests
             _client = new HttpClient();
         }
 
+        public string ServerHostname =>
+            "dev-devspector.herokuapp.com";
+
+        public string ServerFullAddress =>
+            "https://dev-devspector.herokuapp.com/api";
+
         public async Task<T> GetFromServerAsync<T>(string address)
         {
             var response = await _client.GetAsync(address);
@@ -24,7 +30,7 @@ namespace DevSpector.Tests
 
         public async Task<User> GetAuthorizedUser()
         {
-            var response = await _client.GetAsync("https://dev-devspector.herokuapp.com/api/users/authorize?login=root&password=123Abc!");
+            var response = await _client.GetAsync($"{ServerFullAddress}/users/authorize?login=root&password=123Abc!");
             var responseContent = await response.Content.ReadAsStringAsync();
 
             return DeserializeJson<User>(responseContent);
