@@ -9,10 +9,15 @@ namespace DevSpector.SDK
     {
         private readonly HttpClient _client;
 
+        private readonly IHostBuilder _builder;
+
         public JsonProvider(IHostBuilder builder)
         {
             _client = new HttpClient();
         }
+
+        public Uri TargetHost =>
+            _builder.Host;
 
         public async Task<string> GetJsonFrom(string path, string accessToken)
         {
