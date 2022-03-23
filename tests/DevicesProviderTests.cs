@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
@@ -59,6 +60,15 @@ namespace DevSpector.Tests.SDK
 				for (int j = 0; j < expectedSoftware.Count; j++)
 					Assert.Equal(expectedSoftware[j], actualSoftware[j]);
 			}
+		}
+
+		[Fact]
+		public async void CantGetDevices()
+		{
+			// Assert
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await _devicesProvider.GetDevicesAsync("wrongAPI")
+			);
 		}
 	}
 }
