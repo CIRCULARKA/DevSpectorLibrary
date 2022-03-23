@@ -14,6 +14,7 @@ namespace DevSpector.SDK
         public JsonProvider(IHostBuilder builder)
         {
             _client = new HttpClient();
+            _builder = builder;
         }
 
         public Uri TargetHost =>
@@ -21,8 +22,10 @@ namespace DevSpector.SDK
 
         public async Task<string> GetJsonFrom(string path, string accessToken)
         {
+            Uri requestUri = _builder.BuildTargetEndpoint(path);
+
             var request = new HttpRequestMessage {
-                RequestUri = new Uri(path),
+                RequestUri = requestUri,
                 Method = HttpMethod.Get
             };
 
