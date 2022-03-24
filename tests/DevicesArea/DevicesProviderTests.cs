@@ -72,7 +72,7 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
-		public async void CanGetDeviceType()
+		public async void CanGetDeviceTypes()
 		{
 			// Arrange
 			User superUser = await _connectionFixture.GetAuthorizedUser();
@@ -91,6 +91,15 @@ namespace DevSpector.Tests.SDK
 				Assert.Equal(expected[i].ID, actual[i].ID);
 				Assert.Equal(expected[i].Name, actual[i].Name);
 			}
+		}
+
+		[Fact]
+		public async void CantGetDeviceTypes()
+		{
+			// Assert
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await _devicesProvider.GetDeviceTypesAsync("wrongKey")
+			);
 		}
 	}
 }
