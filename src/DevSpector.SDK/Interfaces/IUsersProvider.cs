@@ -8,6 +8,6 @@ namespace DevSpector.SDK
 	{
 		Task<List<User>> GetUsersAsync(string accessToken);
 
-		Task<List<UserGroup>> GetUserGroups(string accessToken);
+		Task<List<UserGroup>> GetUserGroupsAsync(string accessToken);
 	}
 }

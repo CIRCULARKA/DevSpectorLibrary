@@ -4,6 +4,6 @@ namespace DevSpector.SDK.Models
     {
         public string ID { get; }
 
-        public string GroupName { get; }
+        public string Name { get; }
     }
 }

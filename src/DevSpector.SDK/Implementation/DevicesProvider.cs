@@ -16,7 +16,7 @@ namespace DevSpector.SDK
 
 		public async Task<List<Appliance>> GetDevicesAsync(string accessToken)
 		{
-			var response = await _provider.GetDataFromServer("api/devices", accessToken);
+			var response = await _provider.GetDataFromServerAsync("api/devices", accessToken);
 
 			if (!response.IsSucceed)
 				throw new InvalidOperationException($"Failed to load devices from server: error {response.ResponseStatusCode}");
