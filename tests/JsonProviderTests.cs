@@ -104,7 +104,9 @@ namespace DevSpector.Tests
             User addedUser = actualUsers.FirstOrDefault(u => u.Login == expectedUser.Login);
             Assert.NotNull(addedUser);
             Assert.Equal(expectedUser.Login, addedUser.Login);
-            Assert.Equal(expectedUser.FirstName, addedUser.);
+            Assert.Equal(expectedUser.FirstName, addedUser.FirstName);
+            Assert.Equal(expectedUser.Surname, addedUser.Surname);
+            Assert.Equal(expectedUser.Patronymic, addedUser.Patronymic);
         }
     }
 }
