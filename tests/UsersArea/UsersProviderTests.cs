@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Moq;
 using Xunit;
 using DevSpector.SDK;
 using DevSpector.SDK.Models;
@@ -73,7 +71,7 @@ namespace DevSpector.Tests.Server.SDK
 			);
 
 			// Act
-			List<UserGroup> actual =  await _usersProvider.GetUserGroups(superUser.AccessToken);
+			List<UserGroup> actual =  await _usersProvider.GetUserGroupsAsync(superUser.AccessToken);
 
 			// Assert
 			Assert.Equal(expected.Count, actual.Count);
@@ -89,13 +87,12 @@ namespace DevSpector.Tests.Server.SDK
 		{
 			// Assert
 			await Assert.ThrowsAsync<InvalidOperationException>(
-				async () => await _usersProvider.GetUserGroups("wrongKey")
+				async () => await _usersProvider.GetUserGroupsAsync("wrongKey")
 			);
 
 			await Assert.ThrowsAsync<InvalidOperationException>(
-				async () => await _usersProvider.GetUserGroups(null)
+				async () => await _usersProvider.GetUserGroupsAsync(null)
 			);
 		}
-
 	}
 }

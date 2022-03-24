@@ -24,7 +24,7 @@ namespace DevSpector.SDK
 			return _provider.Deserialize<List<User>>(response.ResponseContent);
 		}
 
-		public async Task<List<UserGroup>> GetUserGroups(string accessToken)
+		public async Task<List<UserGroup>> GetUserGroupsAsync(string accessToken)
 		{
 			var response = await _provider.GetDataFromServerAsync("api/users/groups", accessToken);
 
