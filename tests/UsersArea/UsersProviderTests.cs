@@ -48,5 +48,54 @@ namespace DevSpector.Tests.Server.SDK
 				Assert.Equal(expectedUsers[i].Group, actualUsers[i].Group);
 			}
 		}
+
+		[Fact]
+		public async Task CantGetUsers()
+		{
+			// Assert
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await _usersProvider.GetUsersAsync("wrongKey")
+			);
+
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await _usersProvider.GetUsersAsync(null)
+			);
+		}
+
+		[Fact]
+		public async Task CanGetUserGroups()
+		{
+			// Arrange
+			User superUser = await _connectionFixture.GetAuthorizedUser();
+
+			List<UserGroup> expected = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
+				$"{_connectionFixture.ServerFullAddress}/users/groups?api={superUser.AccessToken}"
+			);
+
+			// Act
+			List<UserGroup> actual =  await _usersProvider.GetUserGroups(superUser.AccessToken);
+
+			// Assert
+			Assert.Equal(expected.Count, actual.Count);
+			for (int i = 0; i < expected.Count; i++)
+			{
+				Assert.Equal(expected[i].ID, actual[i].ID);
+				Assert.Equal(expected[i].Name, actual[i].Name);
+			}
+		}
+
+		[Fact]
+		public async Task CantGetUserGroups()
+		{
+			// Assert
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await _usersProvider.GetUserGroups("wrongKey")
+			);
+
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await _usersProvider.GetUserGroups(null)
+			);
+		}
+
 	}
 }
