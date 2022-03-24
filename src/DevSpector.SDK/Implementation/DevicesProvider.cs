@@ -28,7 +28,14 @@ namespace DevSpector.SDK
 
 		public async Task<List<DeviceType>> GetDeviceTypesAsync(string accessToken)
 		{
-			throw new NotImplementedException();
+			var response = await _provider.GetDataFromServerAsync("api/devices/types", accessToken);
+
+			if (!response.IsSucceed)
+				throw new InvalidOperationException($"Failed to load device types from server: error {response.ResponseStatusCode}");
+
+			return _provider.Deserialize<List<DeviceType>>(
+				response.ResponseContent
+			);
 		}
 	}
 }
