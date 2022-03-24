@@ -25,5 +25,10 @@ namespace DevSpector.SDK
 				response.ResponseContent
 			);
 		}
+
+		public async Task<List<DeviceType>> GetDeviceTypesAsync(string accessToken)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

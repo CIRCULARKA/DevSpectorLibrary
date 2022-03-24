@@ -7,5 +7,7 @@ namespace DevSpector.SDK
 	public interface IDevicesProvider
 	{
 		Task<List<Appliance>> GetDevicesAsync(string accessToken);
+
+		Task<List<DeviceType>> GetDeviceTypesAsync(string accessToken);
 	}
 }
