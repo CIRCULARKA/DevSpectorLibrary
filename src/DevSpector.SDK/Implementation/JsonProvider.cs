@@ -80,10 +80,7 @@ namespace DevSpector.SDK
             if (accessToken != null)
                 request.Headers.Add("API", accessToken);
 
-            using (StreamWriter writer = new StreamWriter(await request.Content.ReadAsStreamAsync()))
-            {
-                writer.Write(Serialize(obj));
-            }
+            request.Content = new StringContent(Serialize(obj), Encoding.UTF8, "application/json");
 
             return await _client.SendAsync(request);
         }
