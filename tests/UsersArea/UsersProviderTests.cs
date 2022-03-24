@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
 using DevSpector.SDK.Models;
+using DevSpector.SDK.Exceptions;
 
 namespace DevSpector.Tests.Server.SDK
 {
@@ -51,11 +52,11 @@ namespace DevSpector.Tests.Server.SDK
 		public async Task CantGetUsers()
 		{
 			// Assert
-			await Assert.ThrowsAsync<InvalidOperationException>(
+			await Assert.ThrowsAsync<UnauthorizedException>(
 				async () => await _usersProvider.GetUsersAsync("wrongKey")
 			);
 
-			await Assert.ThrowsAsync<InvalidOperationException>(
+			await Assert.ThrowsAsync<UnauthorizedException>(
 				async () => await _usersProvider.GetUsersAsync(null)
 			);
 		}
@@ -86,11 +87,11 @@ namespace DevSpector.Tests.Server.SDK
 		public async Task CantGetUserGroups()
 		{
 			// Assert
-			await Assert.ThrowsAsync<InvalidOperationException>(
+			await Assert.ThrowsAsync<UnauthorizedException>(
 				async () => await _usersProvider.GetUserGroupsAsync("wrongKey")
 			);
 
-			await Assert.ThrowsAsync<InvalidOperationException>(
+			await Assert.ThrowsAsync<UnauthorizedException>(
 				async () => await _usersProvider.GetUserGroupsAsync(null)
 			);
 		}

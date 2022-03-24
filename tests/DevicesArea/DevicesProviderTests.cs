@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
 using DevSpector.SDK.Models;
+using DevSpector.SDK.Exceptions;
 
 namespace DevSpector.Tests.SDK
 {
@@ -66,7 +67,7 @@ namespace DevSpector.Tests.SDK
 		public async void CantGetDevices()
 		{
 			// Assert
-			await Assert.ThrowsAsync<InvalidOperationException>(
+			await Assert.ThrowsAsync<UnauthorizedException>(
 				async () => await _devicesProvider.GetDevicesAsync("wrongAPI")
 			);
 		}
@@ -97,7 +98,7 @@ namespace DevSpector.Tests.SDK
 		public async void CantGetDeviceTypes()
 		{
 			// Assert
-			await Assert.ThrowsAsync<InvalidOperationException>(
+			await Assert.ThrowsAsync<UnauthorizedException>(
 				async () => await _devicesProvider.GetDeviceTypesAsync("wrongKey")
 			);
 		}
