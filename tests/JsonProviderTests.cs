@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using System.Net;
+using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
 using DevSpector.SDK.Models;
@@ -63,6 +66,45 @@ namespace DevSpector.Tests
                 Assert.Equal(HttpStatusCode.Unauthorized, response.ResponseStatusCode);
                 Assert.False(response.IsSucceed);
             }
+        }
+
+        [Fact]
+        public async void CanSendPostRequest()
+        {
+            // Arrange
+            User superUser = await _connectionFixture.GetAuthorizedUser();
+
+            var provider = new JsonProvider(_hostBuilder);
+
+            List<UserGroup> userGroups = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
+                $"{_connectionFixture.ServerFullAddress}/users/groups?api={superUser.AccessToken}"
+            );
+
+            var expectedUser = new UserInfo {
+                Login = Guid.NewGuid().ToString(),
+                FirstName = Guid.NewGuid().ToString(),
+                Surname = Guid.NewGuid().ToString(),
+                Patronymic = Guid.NewGuid().ToString(),
+                Password = "123Abc!",
+                GroupID = userGroups.FirstOrDefault().ID
+            };
+
+            // Act
+            await provider.PostDataToServerAsync<UserInfo>(
+                "api/users/create",
+                expectedUser,
+                superUser.AccessToken
+            );
+
+            // Assert
+            List<User> actualUsers = await _connectionFixture.GetFromServerAsync<List<User>>(
+                $"{_connectionFixture.ServerFullAddress}/users?api={superUser.AccessToken}"
+            );
+
+            User addedUser = actualUsers.FirstOrDefault(u => u.Login == expectedUser.Login);
+            Assert.NotNull(addedUser);
+            Assert.Equal(expectedUser.Login, addedUser.Login);
+            Assert.Equal(expectedUser.FirstName, addedUser.);
         }
     }
 }
