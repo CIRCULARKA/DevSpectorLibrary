@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DevSpector.SDK
 {
-    public class DevicesModifier
+    public class DevicesEditor
     {
         private readonly string _path = "api/devices/create";
 
@@ -12,7 +12,7 @@ namespace DevSpector.SDK
 
         private readonly IHostBuilder _builder;
 
-        public DevicesModifier(IHostBuilder builder) =>
+        public DevicesEditor(IHostBuilder builder) =>
             _builder = builder;
 
 		public async Task CreateDevice(string networkName, string inventoryNumber, string type)
