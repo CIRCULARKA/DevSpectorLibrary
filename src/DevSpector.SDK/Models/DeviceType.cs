@@ -2,10 +2,10 @@ namespace DevSpector.SDK.Models
 {
     public class DeviceType
     {
-        public DeviceType(string typeID, string typeName)
+        public DeviceType(string id, string name)
         {
-            ID = typeID;
-            Name = typeName;
+            ID = id;
+            Name = name;
         }
 
         public string ID { get; }

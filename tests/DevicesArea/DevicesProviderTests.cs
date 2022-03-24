@@ -70,5 +70,27 @@ namespace DevSpector.Tests.SDK
 				async () => await _devicesProvider.GetDevicesAsync("wrongAPI")
 			);
 		}
+
+		[Fact]
+		public async void CanGetDeviceType()
+		{
+			// Arrange
+			User superUser = await _connectionFixture.GetAuthorizedUser();
+
+			List<DeviceType> expected = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
+				$"{_connectionFixture.ServerFullAddress}/devices/types?api={superUser.AccessToken}"
+			);
+
+			// Act
+			List<DeviceType> actual = await _devicesProvider.GetDeviceTypesAsync(superUser.AccessToken);
+
+			// Assert
+			Assert.Equal(expected.Count, actual.Count);
+			for (int i = 0; i < expected.Count; i++)
+			{
+				Assert.Equal(expected[i].ID, actual[i].ID);
+				Assert.Equal(expected[i].Name, actual[i].Name);
+			}
+		}
 	}
 }
