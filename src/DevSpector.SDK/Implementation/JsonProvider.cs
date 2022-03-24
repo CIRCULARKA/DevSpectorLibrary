@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Text.Json;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -27,11 +30,26 @@ namespace DevSpector.SDK
         public TOut Deserialize<TOut>(string json) =>
             JsonSerializer.Deserialize<TOut>(json, _serializationOptions);
 
+        public string Serialize<T>(T obj) =>
+            JsonSerializer.Serialize<T>(obj, _serializationOptions);
+
         public async Task<ServerResponse> GetDataFromServerAsync(string path, string accessToken = null, Dictionary<string, string> parameters = null)
         {
             Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
 
             var response = await SendGetRequestAsync(requestUri, accessToken);
+
+            return new ServerResponse(
+                response.StatusCode,
+                await response.Content.ReadAsStringAsync()
+            );
+        }
+
+        public async Task<ServerResponse> PostDataToServerAsync<T>(string path, T obj, string accessToken = null, Dictionary<string, string> parameteres = null)
+        {
+            Uri requestUri = _builder.BuildTargetEndpoint(path, parameteres);
+
+            var response = await SendPostRequestAsync<T>(requestUri, obj, accessToken);
 
             return new ServerResponse(
                 response.StatusCode,
@@ -48,6 +66,24 @@ namespace DevSpector.SDK
 
             if (accessToken != null)
                 request.Headers.Add("API", accessToken);
+
+            return await _client.SendAsync(request);
+        }
+
+        private async Task<HttpResponseMessage> SendPostRequestAsync<T>(Uri uri, T obj, string accessToken = null)
+        {
+            var request = new HttpRequestMessage {
+                RequestUri = uri,
+                Method = HttpMethod.Post
+            };
+
+            if (accessToken != null)
+                request.Headers.Add("API", accessToken);
+
+            using (StreamWriter writer = new StreamWriter(await request.Content.ReadAsStreamAsync()))
+            {
+                writer.Write(Serialize(obj));
+            }
 
             return await _client.SendAsync(request);
         }
