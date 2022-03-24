@@ -1,5 +1,3 @@
-using System;
-
 namespace DevSpector.SDK.Models
 {
     /// <summary>
@@ -17,6 +15,6 @@ namespace DevSpector.SDK.Models
 
         public string Password { get; set; }
 
-        public Guid GroupID { get; set; }
+        public string GroupID { get; set; }
     }
 }
