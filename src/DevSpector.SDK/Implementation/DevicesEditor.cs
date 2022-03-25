@@ -13,6 +13,12 @@ namespace DevSpector.SDK
 
 		public async Task CreateDevice(DeviceToCreate deviceInfo)
 		{
+            // var response = _provider.PostDataToServerAsync<DeviceToCreate>(
+            //     "devices/create",
+            //     deviceInfo,
+
+            // );
+
             throw new NotImplementedException();
 		}
     }
