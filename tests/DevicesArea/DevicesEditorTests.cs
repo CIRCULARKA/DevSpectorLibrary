@@ -53,7 +53,7 @@ namespace DevSpector.Tests.SDK
 			// Assert
 			Assert.Equal(expectedDevice.InventoryNumber, addedDevice.InventoryNumber);
 			Assert.Equal(expectedDevice.NetworkName, addedDevice.NetworkName);
-			Assert.Equal(expectedDevice.ModelName, addedDevice.Modelname);
+			Assert.Equal(expectedDevice.ModelName, addedDevice.ModelName);
 			Assert.Equal(expectedType.Name, addedDevice.Type);
 		}
 
@@ -81,7 +81,8 @@ namespace DevSpector.Tests.SDK
 				useWrongAccessKey ? "wrongKey" : superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,
-					scheme: "https"
+					port: _connectionFixture.ServerPort,
+					scheme: "http"
 				)
 			);
 
