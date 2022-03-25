@@ -26,5 +26,10 @@ namespace DevSpector.SDK
             if (!response.IsSucceed)
                 throw new InvalidOperationException($"Could not create device: {response.ResponseStatusCode}");
 		}
+
+		public async Task DeleteDevice(string inventoryNumber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
