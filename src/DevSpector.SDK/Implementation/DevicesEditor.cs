@@ -17,7 +17,7 @@ namespace DevSpector.SDK
 		public async Task CreateDevice(DeviceToCreate deviceInfo)
 		{
             ServerResponse response = await _provider.PostDataToServerAsync<DeviceToCreate>(
-                "devices/add",
+                "api/devices/add",
                 deviceInfo
             );
 
