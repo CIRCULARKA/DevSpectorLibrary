@@ -34,11 +34,13 @@ namespace DevSpector.Tests.SDK
 			List<DeviceType> deviceTypes = await _connectionFixture.
 				GetFromServerAsync<List<DeviceType>>("devices/types");
 
+			DeviceType expectedType = deviceTypes.FirstOrDefault();
+
 			var expectedDevice = new DeviceToCreate {
 				InventoryNumber = Guid.NewGuid().ToString(),
 				NetworkName = Guid.NewGuid().ToString(),
 				ModelName = Guid.NewGuid().ToString(),
-				TypeID = deviceTypes.FirstOrDefault().ID
+				TypeID = expectedType.ID
 			};
 
 			// Act
@@ -54,7 +56,8 @@ namespace DevSpector.Tests.SDK
 			// Assert
 			Assert.Equal(expectedDevice.InventoryNumber, addedDevice.InventoryNumber);
 			Assert.Equal(expectedDevice.NetworkName, addedDevice.NetworkName);
-			// Assert.Equal(expectedDevice.ModelName, addedDevice.);
+			Assert.Equal(expectedDevice.ModelName, addedDevice.Modelname);
+			Assert.Equal(expectedType.Name, addedDevice.Type);
 		}
 	}
 }
