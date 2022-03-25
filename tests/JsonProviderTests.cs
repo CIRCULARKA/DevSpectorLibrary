@@ -4,6 +4,7 @@ using System.Net;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
+using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
 
 namespace DevSpector.Tests
@@ -80,7 +81,7 @@ namespace DevSpector.Tests
                 $"{_connectionFixture.ServerFullAddress}/users/groups?api={superUser.AccessToken}"
             );
 
-            var expectedUser = new UserToSend {
+            var expectedUser = new UserToCreate {
                 Login = Guid.NewGuid().ToString(),
                 FirstName = Guid.NewGuid().ToString(),
                 Surname = Guid.NewGuid().ToString(),
@@ -90,7 +91,7 @@ namespace DevSpector.Tests
             };
 
             // Act
-            var response = await provider.PostDataToServerAsync<UserToSend>(
+            var response = await provider.PostDataToServerAsync<UserToCreate>(
                 "api/users/create",
                 expectedUser,
                 superUser.AccessToken
