@@ -17,7 +17,7 @@ namespace DevSpector.SDK.Models
 			Cabinet = cabinet;
 			IPAddresses = ipAddresses;
 			Software = software;
-			ModelName = ModelName;
+			ModelName = modelName;
 		}
 
 		public Guid ID { get; }
