@@ -5,11 +5,21 @@ namespace DevSpector.SDK.Models
 	/// </summary>
 	public class User
 	{
-		public User(string accessToken, string login, string group)
+		public User(
+			string accessToken,
+			string login,
+			string group,
+			string firstName,
+			string surname,
+			string patronymic
+		)
 		{
 			AccessToken = accessToken;
 			Login = login;
 			Group = group;
+			FirstName = firstName;
+			Surname	 = surname;
+			Patronymic = patronymic;
 		}
 
 		public string AccessToken { get; }
