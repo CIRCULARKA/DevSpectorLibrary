@@ -1,3 +1,7 @@
+using System;
+using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Text.Json;
@@ -22,15 +26,41 @@ namespace DevSpector.Tests
         public string ServerFullAddress =>
             "https://dev-devspector.herokuapp.com/api";
 
-        public async Task<T> GetFromServerAsync<T>(string address)
+        /// <summary>
+        /// Input path without trailing '/'. Uses superuser access token
+        /// </summary>
+        public async Task<T> GetFromServerAsync<T>(string path, Dictionary<string, string> parameters = null)
         {
-            var response = await _client.GetAsync(address);
+            // Get access key
+            User superUser = await GetSuperUser();
+            var accessKey = superUser.AccessToken;
+
+            var uriBuilder = new UriBuilder($"{ServerFullAddress}/{path}?api={accessKey}");
+
+            // Build uri from parameters
+            if (parameters != null)
+            {
+                parameters.Add("api", accessKey);
+
+                var query = new StringBuilder();
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    var pair = parameters.ElementAt(i);
+                    query.Append($"{pair.Key}={pair.Value}");
+                    if (i < parameters.Count - 1)
+                        query.Append("&");
+                }
+
+                uriBuilder.Query = query.ToString();
+            }
+
+            var response = await _client.GetAsync(uriBuilder.Uri.ToString());
             var responseContent = await response.Content.ReadAsStringAsync();
 
             return DeserializeJson<T>(responseContent);
         }
 
-        public async Task<User> GetAuthorizedUser()
+        public async Task<User> GetSuperUser()
         {
             var response = await _client.GetAsync($"{ServerFullAddress}/users/authorize?login=root&password=123Abc!");
             var responseContent = await response.Content.ReadAsStringAsync();

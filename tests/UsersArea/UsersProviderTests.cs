@@ -29,10 +29,10 @@ namespace DevSpector.Tests.Server.SDK
 		public async Task CanGetUsers()
 		{
 			// Arrange
-			User superUser = await _connectionFixture.GetAuthorizedUser();
+			User superUser = await _connectionFixture.GetSuperUser();
 
 			List<User> expectedUsers = await _connectionFixture.GetFromServerAsync<List<User>>(
-				$"{_connectionFixture.ServerFullAddress}/users?api={superUser.AccessToken}"
+				"users"
 			);
 
 			// Act
@@ -65,10 +65,10 @@ namespace DevSpector.Tests.Server.SDK
 		public async Task CanGetUserGroups()
 		{
 			// Arrange
-			User superUser = await _connectionFixture.GetAuthorizedUser();
+			User superUser = await _connectionFixture.GetSuperUser();
 
 			List<UserGroup> expected = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
-				$"{_connectionFixture.ServerFullAddress}/users/groups?api={superUser.AccessToken}"
+				"users/groups"
 			);
 
 			// Act

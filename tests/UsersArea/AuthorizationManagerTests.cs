@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using DevSpector.SDK;
@@ -31,9 +32,10 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             var manager = new AuthorizationManager(jsonProvider);
 
             User expectedUser = await _connectionFixture.GetFromServerAsync<User>(
-                "https://" +
-                _hostname +
-                $"/api/users/authorize?login={_testUserLogin}&password={_testUserPassword}"
+                "users/authorize",
+                new Dictionary<string, string> {
+                    { "login", _testUserLogin }, { "password", _testUserPassword }
+                }
             );
 
             // Act

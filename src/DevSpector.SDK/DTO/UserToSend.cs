@@ -1,9 +1,6 @@
-namespace DevSpector.SDK.Models
+namespace DevSpector.SDK.DTO
 {
-    /// <summary>
-    /// This is the DTO object needed to provide information to server about user
-    /// </summary>
-    public class UserToSend
+    public class UserToCreate
     {
         public string FirstName { get; set; }
 

@@ -4,6 +4,7 @@ using System.Net;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
+using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
 
 namespace DevSpector.Tests
@@ -38,7 +39,7 @@ namespace DevSpector.Tests
             // Arrange
             var provider = new JsonProvider(_hostBuilder);
 
-            User user = await _connectionFixture.GetAuthorizedUser();
+            User user = await _connectionFixture.GetSuperUser();
             string accessToken = user.AccessToken;
 
             // Assert
@@ -72,15 +73,15 @@ namespace DevSpector.Tests
         public async void CanSendPostRequest()
         {
             // Arrange
-            User superUser = await _connectionFixture.GetAuthorizedUser();
+            User superUser = await _connectionFixture.GetSuperUser();
 
             var provider = new JsonProvider(_hostBuilder);
 
             List<UserGroup> userGroups = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
-                $"{_connectionFixture.ServerFullAddress}/users/groups?api={superUser.AccessToken}"
+                "users/groups"
             );
 
-            var expectedUser = new UserToSend {
+            var expectedUser = new UserToCreate {
                 Login = Guid.NewGuid().ToString(),
                 FirstName = Guid.NewGuid().ToString(),
                 Surname = Guid.NewGuid().ToString(),
@@ -90,7 +91,7 @@ namespace DevSpector.Tests
             };
 
             // Act
-            var response = await provider.PostDataToServerAsync<UserToSend>(
+            var response = await provider.PostDataToServerAsync<UserToCreate>(
                 "api/users/create",
                 expectedUser,
                 superUser.AccessToken
@@ -98,7 +99,7 @@ namespace DevSpector.Tests
 
             // Assert
             List<User> actualUsers = await _connectionFixture.GetFromServerAsync<List<User>>(
-                $"{_connectionFixture.ServerFullAddress}/users?api={superUser.AccessToken}"
+                "users"
             );
 
             User addedUser = actualUsers.FirstOrDefault(u => u.Login == expectedUser.Login);
