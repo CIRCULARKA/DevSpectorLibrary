@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Text.Unicode;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,6 +27,10 @@ namespace DevSpector.SDK
 
             _serializationOptions = new JsonSerializerOptions();
             _serializationOptions.PropertyNameCaseInsensitive = true;
+            _serializationOptions.Encoder = JavaScriptEncoder.Create(
+                UnicodeRanges.BasicLatin,
+                UnicodeRanges.Cyrillic
+            );
         }
 
         public TOut Deserialize<TOut>(string json) =>
@@ -80,7 +86,8 @@ namespace DevSpector.SDK
             if (accessToken != null)
                 request.Headers.Add("API", accessToken);
 
-            request.Content = new StringContent(Serialize(obj), Encoding.UTF8, "application/json");
+            var serializedObject = Serialize(obj);
+            request.Content = new StringContent(serializedObject, Encoding.UTF8, "application/json");
 
             return await _client.SendAsync(request);
         }
