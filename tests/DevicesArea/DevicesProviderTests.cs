@@ -73,17 +73,17 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
-		public async void CanGetDeviceTypes()
+		public async void CanGetApplianceTypes()
 		{
 			// Arrange
 			User superUser = await _connectionFixture.GetAuthorizedUser();
 
-			List<DeviceType> expected = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
+			List<ApplianceType> expected = await _connectionFixture.GetFromServerAsync<List<ApplianceType>>(
 				$"{_connectionFixture.ServerFullAddress}/devices/types?api={superUser.AccessToken}"
 			);
 
 			// Act
-			List<DeviceType> actual = await _devicesProvider.GetDeviceTypesAsync(superUser.AccessToken);
+			List<ApplianceType> actual = await _devicesProvider.GetApplianceTypesAsync(superUser.AccessToken);
 
 			// Assert
 			Assert.Equal(expected.Count, actual.Count);
@@ -95,11 +95,11 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
-		public async void CantGetDeviceTypes()
+		public async void CantGetApplianceTypes()
 		{
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _devicesProvider.GetDeviceTypesAsync("wrongKey")
+				async () => await _devicesProvider.GetApplianceTypesAsync("wrongKey")
 			);
 		}
 	}

@@ -8,6 +8,6 @@ namespace DevSpector.SDK
 	{
 		Task<List<Appliance>> GetDevicesAsync(string accessToken);
 
-		Task<List<DeviceType>> GetDeviceTypesAsync(string accessToken);
+		Task<List<ApplianceType>> GetApplianceTypesAsync(string accessToken);
 	}
 }

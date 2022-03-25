@@ -30,7 +30,7 @@ namespace DevSpector.SDK
 			);
 		}
 
-		public async Task<List<DeviceType>> GetDeviceTypesAsync(string accessToken)
+		public async Task<List<ApplianceType>> GetApplianceTypesAsync(string accessToken)
 		{
 			var response = await _provider.GetDataFromServerAsync("api/devices/types", accessToken);
 
@@ -39,7 +39,7 @@ namespace DevSpector.SDK
 			if (!response.IsSucceed)
 				throw new InvalidOperationException($"Failed to load device types from server: error {response.ResponseStatusCode}");
 
-			return _provider.Deserialize<List<DeviceType>>(
+			return _provider.Deserialize<List<ApplianceType>>(
 				response.ResponseContent
 			);
 		}

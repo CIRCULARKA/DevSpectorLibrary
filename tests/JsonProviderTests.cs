@@ -80,7 +80,7 @@ namespace DevSpector.Tests
         //         $"{_connectionFixture.ServerFullAddress}/users/groups?api={superUser.AccessToken}"
         //     );
 
-        //     var expectedUser = new UserInfo {
+        //     var expectedUser = new UserToUpdate {
         //         Login = Guid.NewGuid().ToString(),
         //         FirstName = Guid.NewGuid().ToString(),
         //         Surname = Guid.NewGuid().ToString(),
@@ -90,7 +90,7 @@ namespace DevSpector.Tests
         //     };
 
         //     // Act
-        //     var response = await provider.PostDataToServerAsync<UserInfo>(
+        //     var response = await provider.PostDataToServerAsync<UserToUpdate>(
         //         "api/users/create",
         //         expectedUser,
         //         superUser.AccessToken
