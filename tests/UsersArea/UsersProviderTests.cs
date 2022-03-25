@@ -81,7 +81,9 @@ namespace DevSpector.Tests.Server.SDK
 		public async Task CantGetUserGroups()
 		{
 			// Arrange
-			IUsersProvider provider = await CreateUsersProviderAsync();
+			IUsersProvider provider = await CreateUsersProviderAsync(
+				useWrongAccessKey: true
+			);
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
