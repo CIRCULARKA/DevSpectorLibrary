@@ -22,15 +22,21 @@ namespace DevSpector.Tests
         public string ServerFullAddress =>
             "https://dev-devspector.herokuapp.com/api";
 
-        public async Task<T> GetFromServerAsync<T>(string address)
+        /// <summary>
+        /// Input path without trailing '/'. Uses superuser access token
+        /// </summary>
+        public async Task<T> GetFromServerAsync<T>(string path)
         {
-            var response = await _client.GetAsync(address);
+            User superUser = await GetSuperUser();
+            var accessKey = superUser.AccessToken;
+
+            var response = await _client.GetAsync($"{ServerFullAddress}/{path}?api={accessKey}");
             var responseContent = await response.Content.ReadAsStringAsync();
 
             return DeserializeJson<T>(responseContent);
         }
 
-        public async Task<User> GetAuthorizedUser()
+        public async Task<User> GetSuperUser()
         {
             var response = await _client.GetAsync($"{ServerFullAddress}/users/authorize?login=root&password=123Abc!");
             var responseContent = await response.Content.ReadAsStringAsync();
