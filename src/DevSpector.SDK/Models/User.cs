@@ -17,5 +17,11 @@ namespace DevSpector.SDK.Models
 		public string Login { get; }
 
 		public string Group { get; }
+
+		public string FirstName { get; }
+
+		public string Surname { get; }
+
+		public string Patronymic { get; }
 	}
 }

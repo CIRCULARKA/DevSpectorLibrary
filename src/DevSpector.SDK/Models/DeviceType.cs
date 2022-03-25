@@ -1,8 +1,8 @@
 namespace DevSpector.SDK.Models
 {
-    public class UserGroup
+    public class DeviceType
     {
-        public UserGroup(string id, string name)
+        public DeviceType(string id, string name)
         {
             ID = id;
             Name = name;
