@@ -17,14 +17,14 @@ namespace DevSpector.SDK
 		public async Task CreateDevice(DeviceToCreate deviceInfo)
 		{
             ServerResponse response = await _provider.PostDataToServerAsync<DeviceToCreate>(
-                "devices/create",
+                "devices/add",
                 deviceInfo
             );
 
             if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
                 throw new UnauthorizedException("Could not create device: no access");
             if (!response.IsSucceed)
-                throw new InvalidOperationException($"Could not create device: error {response.ResponseStatusCode}");
+                throw new InvalidOperationException($"Could not create device: {response.ResponseStatusCode}");
 		}
     }
 }
