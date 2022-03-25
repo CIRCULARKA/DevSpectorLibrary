@@ -90,7 +90,7 @@ namespace DevSpector.Tests
             };
 
             // Act
-            await provider.PostDataToServerAsync<UserInfo>(
+            var response = await provider.PostDataToServerAsync<UserInfo>(
                 "api/users/create",
                 expectedUser,
                 superUser.AccessToken
