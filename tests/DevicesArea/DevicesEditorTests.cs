@@ -40,6 +40,21 @@ namespace DevSpector.Tests.SDK
 				ModelName = Guid.NewGuid().ToString(),
 				TypeID = deviceTypes.FirstOrDefault().ID
 			};
+
+			// Act
+			await _editor.CreateDevice(expectedDevice);
+
+			List<Device> actualDevices = await _connectionFixture.GetFromServerAsync<List<Device>>(
+				"devices"
+			);
+
+			Device addedDevice =
+				actualDevices.FirstOrDefault(d => d.InventoryNumber == expectedDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(expectedDevice.InventoryNumber, addedDevice.InventoryNumber);
+			Assert.Equal(expectedDevice.NetworkName, addedDevice.NetworkName);
+			// Assert.Equal(expectedDevice.ModelName, addedDevice.);
 		}
 	}
 }
