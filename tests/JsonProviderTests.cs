@@ -39,7 +39,7 @@ namespace DevSpector.Tests
             // Arrange
             var provider = new JsonProvider(_hostBuilder);
 
-            User user = await _connectionFixture.GetAuthorizedUser();
+            User user = await _connectionFixture.GetSuperUser();
             string accessToken = user.AccessToken;
 
             // Assert
@@ -73,12 +73,12 @@ namespace DevSpector.Tests
         public async void CanSendPostRequest()
         {
             // Arrange
-            User superUser = await _connectionFixture.GetAuthorizedUser();
+            User superUser = await _connectionFixture.GetSuperUser();
 
             var provider = new JsonProvider(_hostBuilder);
 
             List<UserGroup> userGroups = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
-                $"{_connectionFixture.ServerFullAddress}/users/groups?api={superUser.AccessToken}"
+                "users/groups"
             );
 
             var expectedUser = new UserToCreate {
@@ -99,7 +99,7 @@ namespace DevSpector.Tests
 
             // Assert
             List<User> actualUsers = await _connectionFixture.GetFromServerAsync<List<User>>(
-                $"{_connectionFixture.ServerFullAddress}/users?api={superUser.AccessToken}"
+                "users"
             );
 
             User addedUser = actualUsers.FirstOrDefault(u => u.Login == expectedUser.Login);

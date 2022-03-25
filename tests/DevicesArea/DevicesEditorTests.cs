@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
+using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
 using DevSpector.SDK.Exceptions;
 
@@ -26,9 +28,18 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
-		public void CanAddDevice()
+		public async void CanAddDevice()
 		{
+			// Arrange
+			List<DeviceType> deviceTypes = await _connectionFixture.
+				GetFromServerAsync<List<DeviceType>>("devices/types");
 
+			var expectedDevice = new DeviceToCreate {
+				InventoryNumber = Guid.NewGuid().ToString(),
+				NetworkName = Guid.NewGuid().ToString(),
+				ModelName = Guid.NewGuid().ToString(),
+				TypeID = deviceTypes.FirstOrDefault().ID
+			};
 		}
 	}
 }

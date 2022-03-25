@@ -1,3 +1,7 @@
+using System;
+using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Text.Json;
@@ -25,12 +29,32 @@ namespace DevSpector.Tests
         /// <summary>
         /// Input path without trailing '/'. Uses superuser access token
         /// </summary>
-        public async Task<T> GetFromServerAsync<T>(string path)
+        public async Task<T> GetFromServerAsync<T>(string path, Dictionary<string, string> parameters = null)
         {
+            // Get access key
             User superUser = await GetSuperUser();
             var accessKey = superUser.AccessToken;
 
-            var response = await _client.GetAsync($"{ServerFullAddress}/{path}?api={accessKey}");
+            var uriBuilder = new UriBuilder($"{ServerFullAddress}/{path}?api={accessKey}");
+
+            // Build uri from parameters
+            if (parameters != null)
+            {
+                parameters.Add("api", accessKey);
+
+                var query = new StringBuilder();
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    var pair = parameters.ElementAt(i);
+                    query.Append($"{pair.Key}={pair.Value}");
+                    if (i < parameters.Count - 1)
+                        query.Append("&");
+                }
+
+                uriBuilder.Query = query.ToString();
+            }
+
+            var response = await _client.GetAsync(uriBuilder.Uri.ToString());
             var responseContent = await response.Content.ReadAsStringAsync();
 
             return DeserializeJson<T>(responseContent);

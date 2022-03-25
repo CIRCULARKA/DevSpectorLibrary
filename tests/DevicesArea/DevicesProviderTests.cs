@@ -29,10 +29,10 @@ namespace DevSpector.Tests.SDK
 		public async void CanGetDevices()
 		{
 			// Arrange
-			User user = await _connectionFixture.GetAuthorizedUser();
+			User user = await _connectionFixture.GetSuperUser();
 
 			List<Device> expected = await _connectionFixture.GetFromServerAsync<List<Device>>(
-				$"https://dev-devspector.herokuapp.com/api/devices?api={user.AccessToken}"
+				"devices"
 			);
 
 			// Act
@@ -76,10 +76,10 @@ namespace DevSpector.Tests.SDK
 		public async void CanGetDeviceTypes()
 		{
 			// Arrange
-			User superUser = await _connectionFixture.GetAuthorizedUser();
+			User superUser = await _connectionFixture.GetSuperUser();
 
 			List<DeviceType> expected = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
-				$"{_connectionFixture.ServerFullAddress}/devices/types?api={superUser.AccessToken}"
+				"devices/types"
 			);
 
 			// Act
