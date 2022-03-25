@@ -57,12 +57,28 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedType.Name, addedDevice.Type);
 		}
 
-		public async Task<IDevicesEditor> CreateDevicesEditor()
+		[Fact]
+		public async Task CantAddDevice()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			// Assert
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => editor.CreateDevice(new DeviceToCreate {
+					InventoryNumber = Guid.NewGuid().ToString()
+				})
+			);
+		}
+
+		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
 
 			IRawDataProvider provider = new JsonProvider(
-				superUser.AccessToken,
+				useWrongAccessKey ? "wrongKey" : superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,
 					scheme: "https"
