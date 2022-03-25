@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
+using DevSpector.SDK.DTO;
 
 namespace DevSpector.SDK
 {
 	public interface IDevicesEditor
 	{
-		Task CreateDevice(string networkName, string inventoryNumber, string type);
+		Task CreateDevice(DeviceToCreate deviceInfo);
 	}
 }

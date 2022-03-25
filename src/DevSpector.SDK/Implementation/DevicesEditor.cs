@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using DevSpector.SDK.DTO;
 
 namespace DevSpector.SDK
 {
@@ -10,7 +11,7 @@ namespace DevSpector.SDK
         public DevicesEditor(IRawDataProvider provider) =>
             _provider = provider;
 
-		public async Task CreateDevice(string networkName, string inventoryNumber, string type)
+		public async Task CreateDevice(DeviceToCreate deviceInfo)
 		{
             throw new NotImplementedException();
 		}
