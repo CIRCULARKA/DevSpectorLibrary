@@ -28,8 +28,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CanGetUser()
         {
             // Arrange
-            var jsonProvider = new JsonProvider(new HostBuilder(_hostname, scheme: "https"));
-            var manager = new AuthorizationManager(jsonProvider);
+            var manager = await CreateAuthManagerAsync();
 
             User expectedUser = await _connectionFixture.GetFromServerAsync<User>(
                 "users/authorize",
@@ -51,8 +50,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CantGetUser()
         {
             // Arrange
-            var jsonProvider = new JsonProvider(new HostBuilder(_hostname, scheme: "https"));
-            var manager = new AuthorizationManager(jsonProvider);
+            var manager = await CreateAuthManagerAsync();
 
             // Assert
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
@@ -67,5 +65,20 @@ namespace DevSpector.Tests.Common.SDK.Authorization
                 await manager.TryToSignInAsync(_testUserPassword, "wrongPassword")
             );
         }
+
+		private async Task<IAuthorizationManager> CreateAuthManagerAsync(bool useWrongAccessKey = false)
+		{
+			User superUser = await _connectionFixture.GetSuperUser();
+
+			IRawDataProvider provider = new JsonProvider(
+				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
+				new HostBuilder(
+					hostname: _connectionFixture.ServerHostname,
+					scheme: "https"
+				)
+			);
+
+			return new AuthorizationManager(provider);
+		}
     }
 }

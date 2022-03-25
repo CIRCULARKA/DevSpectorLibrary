@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
@@ -16,21 +17,17 @@ namespace DevSpector.Tests.SDK
 
 		private readonly IRawDataProvider _rawDataProvider;
 
-		private readonly IDevicesEditor _editor;
-
 		public DevicesEditorTests(ServerConnectionFixture conFix)
 		{
 			_connectionFixture = conFix;
-
-			_rawDataProvider = new JsonProvider(new HostBuilder("dev-devspector.herokuapp.com", scheme: "https"));
-
-			_editor = new DevicesEditor(_rawDataProvider);
 		}
 
 		[Fact]
-		public async void CanAddDevice()
+		public async Task CanAddDevice()
 		{
 			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
 			List<DeviceType> deviceTypes = await _connectionFixture.
 				GetFromServerAsync<List<DeviceType>>("devices/types");
 
@@ -44,7 +41,7 @@ namespace DevSpector.Tests.SDK
 			};
 
 			// Act
-			await _editor.CreateDevice(expectedDevice);
+			await editor.CreateDevice(expectedDevice);
 
 			List<Device> actualDevices = await _connectionFixture.GetFromServerAsync<List<Device>>(
 				"devices"
@@ -58,6 +55,21 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedDevice.NetworkName, addedDevice.NetworkName);
 			Assert.Equal(expectedDevice.ModelName, addedDevice.Modelname);
 			Assert.Equal(expectedType.Name, addedDevice.Type);
+		}
+
+		public async Task<IDevicesEditor> CreateDevicesEditor()
+		{
+			User superUser = await _connectionFixture.GetSuperUser();
+
+			IRawDataProvider provider = new JsonProvider(
+				superUser.AccessToken,
+				new HostBuilder(
+					hostname: _connectionFixture.ServerHostname,
+					scheme: "https"
+				)
+			);
+
+			return new DevicesEditor(provider);
 		}
 	}
 }

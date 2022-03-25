@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using DevSpector.SDK;
 using DevSpector.SDK.Models;
@@ -12,31 +13,23 @@ namespace DevSpector.Tests.SDK
 	{
 		private readonly ServerConnectionFixture _connectionFixture;
 
-		private readonly IRawDataProvider _rawDataProvider;
-
-		private readonly IDevicesProvider _devicesProvider;
-
 		public DevicesProviderTests(ServerConnectionFixture conFix)
 		{
 			_connectionFixture = conFix;
-
-			_rawDataProvider = new JsonProvider(new HostBuilder("dev-devspector.herokuapp.com", scheme: "https"));
-
-			_devicesProvider = new DevicesProvider(_rawDataProvider);
 		}
 
 		[Fact]
 		public async void CanGetDevices()
 		{
 			// Arrange
-			User user = await _connectionFixture.GetSuperUser();
+			IDevicesProvider provider = await CreateDevicesProviderAsync();
 
 			List<Device> expected = await _connectionFixture.GetFromServerAsync<List<Device>>(
 				"devices"
 			);
 
 			// Act
-			var actual = await _devicesProvider.GetDevicesAsync(user.AccessToken);
+			var actual = await provider.GetDevicesAsync();
 
 			// Assert
 			Assert.Equal(expected.Count, actual.Count);
@@ -66,9 +59,14 @@ namespace DevSpector.Tests.SDK
 		[Fact]
 		public async void CantGetDevices()
 		{
+			// Arrange
+			IDevicesProvider provider = await CreateDevicesProviderAsync(
+				useWrongAccessKey: true
+			);
+
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _devicesProvider.GetDevicesAsync("wrongAPI")
+				async () => await provider.GetDevicesAsync()
 			);
 		}
 
@@ -76,14 +74,14 @@ namespace DevSpector.Tests.SDK
 		public async void CanGetDeviceTypes()
 		{
 			// Arrange
-			User superUser = await _connectionFixture.GetSuperUser();
+			IDevicesProvider provider = await CreateDevicesProviderAsync();
 
 			List<DeviceType> expected = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
 				"devices/types"
 			);
 
 			// Act
-			List<DeviceType> actual = await _devicesProvider.GetDeviceTypesAsync(superUser.AccessToken);
+			List<DeviceType> actual = await provider.GetDeviceTypesAsync();
 
 			// Assert
 			Assert.Equal(expected.Count, actual.Count);
@@ -97,10 +95,30 @@ namespace DevSpector.Tests.SDK
 		[Fact]
 		public async void CantGetDeviceTypes()
 		{
+			// Arrange
+			IDevicesProvider provider = await CreateDevicesProviderAsync(
+				useWrongAccessKey: true
+			);
+
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _devicesProvider.GetDeviceTypesAsync("wrongKey")
+				async () => await provider.GetDeviceTypesAsync()
 			);
+		}
+
+		private async Task<IDevicesProvider> CreateDevicesProviderAsync(bool useWrongAccessKey = false)
+		{
+			User superUser = await _connectionFixture.GetSuperUser();
+
+			IRawDataProvider provider = new JsonProvider(
+				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
+				new HostBuilder(
+					hostname: _connectionFixture.ServerHostname,
+					scheme: "https"
+				)
+			);
+
+			return new DevicesProvider(provider);
 		}
 	}
 }

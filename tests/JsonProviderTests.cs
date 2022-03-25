@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
@@ -24,28 +25,21 @@ namespace DevSpector.Tests
             "api/location/housings",
         };
 
-        private readonly IHostBuilder _hostBuilder;
-
         public JsonProviderTests(ServerConnectionFixture conFix)
         {
             _connectionFixture = conFix;
-
-            _hostBuilder = new HostBuilder(_host, scheme: "https");
         }
 
         [Fact]
         public async void ReturnsObjects()
         {
             // Arrange
-            var provider = new JsonProvider(_hostBuilder);
-
-            User user = await _connectionFixture.GetSuperUser();
-            string accessToken = user.AccessToken;
+            IRawDataProvider provider = await CreateJsonProvider();
 
             // Assert
             foreach (var endpoint in _endpoints)
             {
-                ServerResponse response = await provider.GetDataFromServerAsync(endpoint, accessToken);
+                ServerResponse response = await provider.GetDataFromServerAsync(endpoint);
 
                 Assert.Equal(HttpStatusCode.OK, response.ResponseStatusCode);
                 Assert.True(response.IsSucceed);
@@ -57,7 +51,9 @@ namespace DevSpector.Tests
         public async void CantGetDataWithoutAccessKey()
         {
             // Arrange
-            var provider = new JsonProvider(_hostBuilder);
+            var provider = await CreateJsonProvider(
+                useWrongAccessKey: true
+            );
 
             // Assert
             foreach (var endpoint in _endpoints)
@@ -73,9 +69,7 @@ namespace DevSpector.Tests
         public async void CanSendPostRequest()
         {
             // Arrange
-            User superUser = await _connectionFixture.GetSuperUser();
-
-            var provider = new JsonProvider(_hostBuilder);
+            IRawDataProvider provider = await CreateJsonProvider();
 
             List<UserGroup> userGroups = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
                 "users/groups"
@@ -93,8 +87,7 @@ namespace DevSpector.Tests
             // Act
             var response = await provider.PostDataToServerAsync<UserToCreate>(
                 "api/users/create",
-                expectedUser,
-                superUser.AccessToken
+                expectedUser
             );
 
             // Assert
@@ -109,5 +102,19 @@ namespace DevSpector.Tests
             Assert.Equal(expectedUser.Surname, addedUser.Surname);
             Assert.Equal(expectedUser.Patronymic, addedUser.Patronymic);
         }
+
+		private async Task<IRawDataProvider> CreateJsonProvider(bool useWrongAccessKey = false)
+		{
+			User superUser = await _connectionFixture.GetSuperUser();
+
+			return new JsonProvider(
+				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
+				new HostBuilder(
+					hostname: _connectionFixture.ServerHostname,
+					scheme: "https"
+				)
+			);
+		}
+
     }
 }

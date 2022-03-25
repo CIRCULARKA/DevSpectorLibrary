@@ -26,8 +26,7 @@ namespace DevSpector.SDK.Authorization
 
             var response = await _provider.GetDataFromServerAsync(
                 path: "api/users/authorize",
-                parameters: parameters,
-                accessToken: null
+                parameters: parameters
             );
 
             if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)

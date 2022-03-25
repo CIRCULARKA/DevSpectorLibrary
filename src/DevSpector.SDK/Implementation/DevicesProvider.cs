@@ -16,9 +16,9 @@ namespace DevSpector.SDK
 			_provider = provider;
 		}
 
-		public async Task<List<Device>> GetDevicesAsync(string accessToken)
+		public async Task<List<Device>> GetDevicesAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/devices", accessToken);
+			var response = await _provider.GetDataFromServerAsync("api/devices");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Failed to load devices from server: no access");
@@ -30,9 +30,9 @@ namespace DevSpector.SDK
 			);
 		}
 
-		public async Task<List<DeviceType>> GetDeviceTypesAsync(string accessToken)
+		public async Task<List<DeviceType>> GetDeviceTypesAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/devices/types", accessToken);
+			var response = await _provider.GetDataFromServerAsync("api/devices/types");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Failed to load device types from server: no access");
