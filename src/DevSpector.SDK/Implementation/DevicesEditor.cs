@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DevSpector.SDK
 {
-    public class DevicesEditor
+    public class DevicesEditor : IDevicesEditor
     {
         private readonly IRawDataProvider _provider;
 
