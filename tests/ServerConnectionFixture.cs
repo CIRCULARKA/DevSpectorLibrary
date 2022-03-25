@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-using System.Text;
 using System.Text.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -45,7 +42,8 @@ namespace DevSpector.Tests
             JsonSerializer.Deserialize<T>(
                 json,
                 new JsonSerializerOptions {
-                    PropertyNameCaseInsensitive = true
+                    PropertyNameCaseInsensitive = true,
+                    Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic)
                 }
             );
     }
