@@ -27,7 +27,7 @@ namespace DevSpector.SDK.Models
 
 		public string NetworkName { get; }
 
-		public string Modelname { get; }
+		public string ModelName { get; }
 
 		public string Housing { get; }
 
