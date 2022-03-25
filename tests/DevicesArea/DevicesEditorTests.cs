@@ -73,6 +73,56 @@ namespace DevSpector.Tests.SDK
 			);
 		}
 
+		[Fact]
+		public async Task CanDeleteDevices()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+			List<Device> devices = await _connectionFixture.GetFromServerAsync<List<Device>>(
+				"devices"
+			);
+
+			Device targetDevice = devices.FirstOrDefault();
+
+			// Act
+			await editor.DeleteDevice(targetDevice.InventoryNumber);
+
+			List<Device> newDevicesList = await _connectionFixture.GetFromServerAsync<List<Device>>(
+				"devices"
+			);
+
+			Device shouldBeNull = newDevicesList.FirstOrDefault(d => d.InventoryNumber == targetDevice.InventoryNumber);
+
+			// Assert
+			Assert.Null(shouldBeNull);
+		}
+
+		[Fact]
+		public async Task CantDeleteDevice()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			IDevicesEditor validEditor = await CreateDevicesEditor();
+
+			List<Device> devices = await _connectionFixture.GetFromServerAsync<List<Device>>(
+				"devices"
+			);
+
+			Device targetDevice = devices.FirstOrDefault();
+
+			// Assert
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => editor.DeleteDevice(targetDevice.InventoryNumber)
+			);
+
+			await Assert.ThrowsAsync<InvalidOperationException>(
+				() => editor.DeleteDevice(targetDevice.InventoryNumber)
+			);
+		}
+
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
