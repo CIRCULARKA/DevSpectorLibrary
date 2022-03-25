@@ -1,8 +1,8 @@
 namespace DevSpector.SDK.Models
 {
-    public class ApplianceType
+    public class DeviceType
     {
-        public ApplianceType(string id, string name)
+        public DeviceType(string id, string name)
         {
             ID = id;
             Name = name;

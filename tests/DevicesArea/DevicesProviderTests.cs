@@ -31,7 +31,7 @@ namespace DevSpector.Tests.SDK
 			// Arrange
 			User user = await _connectionFixture.GetAuthorizedUser();
 
-			List<Appliance> expected = await _connectionFixture.GetFromServerAsync<List<Appliance>>(
+			List<Device> expected = await _connectionFixture.GetFromServerAsync<List<Device>>(
 				$"https://dev-devspector.herokuapp.com/api/devices?api={user.AccessToken}"
 			);
 
@@ -73,17 +73,17 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
-		public async void CanGetApplianceTypes()
+		public async void CanGetDeviceTypes()
 		{
 			// Arrange
 			User superUser = await _connectionFixture.GetAuthorizedUser();
 
-			List<ApplianceType> expected = await _connectionFixture.GetFromServerAsync<List<ApplianceType>>(
+			List<DeviceType> expected = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
 				$"{_connectionFixture.ServerFullAddress}/devices/types?api={superUser.AccessToken}"
 			);
 
 			// Act
-			List<ApplianceType> actual = await _devicesProvider.GetApplianceTypesAsync(superUser.AccessToken);
+			List<DeviceType> actual = await _devicesProvider.GetDeviceTypesAsync(superUser.AccessToken);
 
 			// Assert
 			Assert.Equal(expected.Count, actual.Count);
@@ -95,11 +95,11 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
-		public async void CantGetApplianceTypes()
+		public async void CantGetDeviceTypes()
 		{
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _devicesProvider.GetApplianceTypesAsync("wrongKey")
+				async () => await _devicesProvider.GetDeviceTypesAsync("wrongKey")
 			);
 		}
 	}

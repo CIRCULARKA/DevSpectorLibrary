@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace DevSpector.SDK.Models
 {
-	public class Appliance
+	public class Device
 	{
-		public Appliance(Guid id, string inventoryNumber, string type,
+		public Device(Guid id, string inventoryNumber, string type,
 			string networkName, string housing, string cabinet,
 			List<string> ipAddresses, List<string> software)
 		{
