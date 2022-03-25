@@ -6,5 +6,7 @@ namespace DevSpector.SDK
 	public interface IDevicesEditor
 	{
 		Task CreateDevice(DeviceToCreate deviceInfo);
+
+		Task DeleteDevice(string inventoryNumber);
 	}
 }
