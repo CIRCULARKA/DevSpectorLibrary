@@ -20,8 +20,12 @@ namespace DevSpector.SDK
 
         private readonly JsonSerializerOptions _serializationOptions;
 
-        public JsonProvider(IHostBuilder builder)
+        private readonly string _accessToken;
+
+        public JsonProvider(string accessToken, IHostBuilder builder)
         {
+            _accessToken = accessToken;
+
             _client = new HttpClient();
             _builder = builder;
 
@@ -39,11 +43,11 @@ namespace DevSpector.SDK
         public string Serialize<T>(T obj) =>
             JsonSerializer.Serialize<T>(obj, _serializationOptions);
 
-        public async Task<ServerResponse> GetDataFromServerAsync(string path, string accessToken = null, Dictionary<string, string> parameters = null)
+        public async Task<ServerResponse> GetDataFromServerAsync(string path, Dictionary<string, string> parameters = null)
         {
             Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
 
-            var response = await SendGetRequestAsync(requestUri, accessToken);
+            var response = await SendGetRequestAsync(requestUri);
 
             return new ServerResponse(
                 response.StatusCode,
@@ -51,11 +55,11 @@ namespace DevSpector.SDK
             );
         }
 
-        public async Task<ServerResponse> PostDataToServerAsync<T>(string path, T obj, string accessToken = null, Dictionary<string, string> parameteres = null)
+        public async Task<ServerResponse> PostDataToServerAsync<T>(string path, T obj, Dictionary<string, string> parameteres = null)
         {
             Uri requestUri = _builder.BuildTargetEndpoint(path, parameteres);
 
-            var response = await SendPostRequestAsync<T>(requestUri, obj, accessToken);
+            var response = await SendPostRequestAsync<T>(requestUri, obj);
 
             return new ServerResponse(
                 response.StatusCode,
@@ -63,28 +67,28 @@ namespace DevSpector.SDK
             );
         }
 
-        private async Task<HttpResponseMessage> SendGetRequestAsync(Uri uri, string accessToken = null)
+        private async Task<HttpResponseMessage> SendGetRequestAsync(Uri uri)
         {
             var request = new HttpRequestMessage {
                 RequestUri = uri,
                 Method = HttpMethod.Get
             };
 
-            if (accessToken != null)
-                request.Headers.Add("API", accessToken);
+            if (_accessToken != null)
+                request.Headers.Add("API", _accessToken);
 
             return await _client.SendAsync(request);
         }
 
-        private async Task<HttpResponseMessage> SendPostRequestAsync<T>(Uri uri, T obj, string accessToken = null)
+        private async Task<HttpResponseMessage> SendPostRequestAsync<T>(Uri uri, T obj)
         {
             var request = new HttpRequestMessage {
                 RequestUri = uri,
                 Method = HttpMethod.Post
             };
 
-            if (accessToken != null)
-                request.Headers.Add("API", accessToken);
+            if (_accessToken != null)
+                request.Headers.Add("API", _accessToken);
 
             var serializedObject = Serialize(obj);
             request.Content = new StringContent(serializedObject, Encoding.UTF8, "application/json");

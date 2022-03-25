@@ -16,9 +16,9 @@ namespace DevSpector.SDK
 			_provider = provider;
 		}
 
-		public async Task<List<User>> GetUsersAsync(string accessToken)
+		public async Task<List<User>> GetUsersAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/users", accessToken);
+			var response = await _provider.GetDataFromServerAsync("api/users");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Could not get users from server: no access");
@@ -28,9 +28,9 @@ namespace DevSpector.SDK
 			return _provider.Deserialize<List<User>>(response.ResponseContent);
 		}
 
-		public async Task<List<UserGroup>> GetUserGroupsAsync(string accessToken)
+		public async Task<List<UserGroup>> GetUserGroupsAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/users/groups", accessToken);
+			var response = await _provider.GetDataFromServerAsync("api/users/groups");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Could not get user groups from server: no access");

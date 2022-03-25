@@ -13,30 +13,23 @@ namespace DevSpector.Tests.Server.SDK
 	{
 		private readonly ServerConnectionFixture _connectionFixture;
 
-		private readonly IUsersProvider _usersProvider;
-
-		private readonly IRawDataProvider _rawDataProvider;
-
 		public UsersProviderTests(ServerConnectionFixture conFix)
 		{
 			_connectionFixture = conFix;
-
-			_rawDataProvider = new JsonProvider(new HostBuilder(_connectionFixture.ServerHostname, scheme: "https"));
-			_usersProvider = new UsersProvider(_rawDataProvider);
 		}
 
 		[Fact]
 		public async Task CanGetUsers()
 		{
 			// Arrange
-			User superUser = await _connectionFixture.GetSuperUser();
+			IUsersProvider provider = await CreateUsersProviderAsync();
 
 			List<User> expectedUsers = await _connectionFixture.GetFromServerAsync<List<User>>(
 				"users"
 			);
 
 			// Act
-			List<User> actualUsers = await _usersProvider.GetUsersAsync(superUser.AccessToken);
+			List<User> actualUsers = await provider.GetUsersAsync();
 
 			// Assert
 			Assert.Equal(expectedUsers.Count, actualUsers.Count);
@@ -51,13 +44,14 @@ namespace DevSpector.Tests.Server.SDK
 		[Fact]
 		public async Task CantGetUsers()
 		{
-			// Assert
-			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _usersProvider.GetUsersAsync("wrongKey")
+			// Arrange
+			IUsersProvider provider = await CreateUsersProviderAsync(
+				useWrongAccessKey: true
 			);
 
+			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _usersProvider.GetUsersAsync(null)
+				async () => await provider.GetUsersAsync()
 			);
 		}
 
@@ -65,14 +59,14 @@ namespace DevSpector.Tests.Server.SDK
 		public async Task CanGetUserGroups()
 		{
 			// Arrange
-			User superUser = await _connectionFixture.GetSuperUser();
+			IUsersProvider provider = await CreateUsersProviderAsync();
 
 			List<UserGroup> expected = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
 				"users/groups"
 			);
 
 			// Act
-			List<UserGroup> actual =  await _usersProvider.GetUserGroupsAsync(superUser.AccessToken);
+			List<UserGroup> actual =  await provider.GetUserGroupsAsync();
 
 			// Assert
 			Assert.Equal(expected.Count, actual.Count);
@@ -86,14 +80,30 @@ namespace DevSpector.Tests.Server.SDK
 		[Fact]
 		public async Task CantGetUserGroups()
 		{
-			// Assert
-			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _usersProvider.GetUserGroupsAsync("wrongKey")
+			// Arrange
+			IUsersProvider provider = await CreateUsersProviderAsync(
+				useWrongAccessKey: true
 			);
 
+			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				async () => await _usersProvider.GetUserGroupsAsync(null)
+				async () => await provider.GetUserGroupsAsync()
 			);
+		}
+
+		private async Task<IUsersProvider> CreateUsersProviderAsync(bool useWrongAccessKey = false)
+		{
+			User superUser = await _connectionFixture.GetSuperUser();
+
+			IRawDataProvider provider = new JsonProvider(
+				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
+				new HostBuilder(
+					hostname: _connectionFixture.ServerHostname,
+					scheme: "https"
+				)
+			);
+
+			return new UsersProvider(provider);
 		}
 	}
 }
