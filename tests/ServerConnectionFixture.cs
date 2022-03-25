@@ -20,11 +20,20 @@ namespace DevSpector.Tests
             _client = new HttpClient();
         }
 
+        // public string ServerHostname =>
+        //     "dev-devspector.herokuapp.com";
+
+        // public string ServerHostname =>
+        //     "localhost";
+
         public string ServerHostname =>
             "dev-devspector.herokuapp.com";
 
-        public string ServerFullAddress =>
-            "https://dev-devspector.herokuapp.com/api";
+        // public int ServerPort =>
+        //     5000;
+
+        public int ServerPort =>
+            80;
 
         /// <summary>
         /// Input path without trailing '/'. Uses superuser access token
@@ -35,7 +44,7 @@ namespace DevSpector.Tests
             User superUser = await GetSuperUser();
             var accessKey = superUser.AccessToken;
 
-            var uriBuilder = new UriBuilder($"{ServerFullAddress}/{path}?api={accessKey}");
+            var uriBuilder = new UriBuilder($"http://{ServerHostname}:{ServerPort}/api/{path}?api={accessKey}");
 
             // Build uri from parameters
             if (parameters != null)
@@ -62,7 +71,7 @@ namespace DevSpector.Tests
 
         public async Task<User> GetSuperUser()
         {
-            var response = await _client.GetAsync($"{ServerFullAddress}/users/authorize?login=root&password=123Abc!");
+            var response = await _client.GetAsync($"http://{ServerHostname}:{ServerPort}/api/users/authorize?login=root&password=123Abc!");
             var responseContent = await response.Content.ReadAsStringAsync();
 
             return DeserializeJson<User>(responseContent);
