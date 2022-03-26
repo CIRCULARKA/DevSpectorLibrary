@@ -47,7 +47,7 @@ namespace DevSpector.SDK
         {
             Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
 
-            var response = await SendGetRequestAsync(requestUri);
+            var response = await SendRequestAsync(requestUri, HttpMethod.Get);
 
             return new ServerResponse(
                 response.StatusCode,
@@ -55,11 +55,11 @@ namespace DevSpector.SDK
             );
         }
 
-        public async Task<ServerResponse> PostAsync<T>(string path, T obj, Dictionary<string, string> parameteres = null)
+        public async Task<ServerResponse> DeleteAsync(string path, Dictionary<string, string> parameters = null)
         {
-            Uri requestUri = _builder.BuildTargetEndpoint(path, parameteres);
+            Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
 
-            var response = await SendPostRequestAsync<T>(requestUri, obj);
+            var response = await SendRequestAsync(requestUri, HttpMethod.Delete);
 
             return new ServerResponse(
                 response.StatusCode,
@@ -67,28 +67,48 @@ namespace DevSpector.SDK
             );
         }
 
-        private async Task<HttpResponseMessage> SendGetRequestAsync(Uri uri)
+        public async Task<ServerResponse> PostAsync<T>(string path, T obj, Dictionary<string, string> parameters = null)
+            where T: class
+        {
+            Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
+
+            var response = await SendRequestWithBodyAsync<T>(requestUri, HttpMethod.Post, obj);
+
+            return new ServerResponse(
+                response.StatusCode,
+                await response.Content.ReadAsStringAsync()
+            );
+        }
+
+        public async Task<ServerResponse> PutAsync<T>(string path, T obj, Dictionary<string, string> parameters = null)
+            where T: class
+        {
+            Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
+
+            var response = await SendRequestWithBodyAsync<T>(requestUri, HttpMethod.Put, obj);
+
+            return new ServerResponse(
+                response.StatusCode,
+                await response.Content.ReadAsStringAsync()
+            );
+        }
+
+        private async Task<HttpResponseMessage> SendRequestAsync(Uri uri, HttpMethod method)
         {
             var request = new HttpRequestMessage {
                 RequestUri = uri,
-                Method = HttpMethod.Get
+                Method = method
             };
-
-            if (_accessToken != null)
-                request.Headers.Add("API", _accessToken);
 
             return await _client.SendAsync(request);
         }
 
-        private async Task<HttpResponseMessage> SendPostRequestAsync<T>(Uri uri, T obj)
+        private async Task<HttpResponseMessage> SendRequestWithBodyAsync<T>(Uri uri, HttpMethod method, T obj)
         {
             var request = new HttpRequestMessage {
                 RequestUri = uri,
-                Method = HttpMethod.Post
+                Method = method
             };
-
-            if (_accessToken != null)
-                request.Headers.Add("API", _accessToken);
 
             var serializedObject = Serialize(obj);
             request.Content = new StringContent(serializedObject, Encoding.UTF8, "application/json");
