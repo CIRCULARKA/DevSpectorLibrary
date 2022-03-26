@@ -100,6 +100,8 @@ namespace DevSpector.SDK
                 Method = method
             };
 
+            AddAccessKeyToHeader(request);
+
             return await _client.SendAsync(request);
         }
 
@@ -110,10 +112,17 @@ namespace DevSpector.SDK
                 Method = method
             };
 
+            AddAccessKeyToHeader(request);
+
             var serializedObject = Serialize(obj);
             request.Content = new StringContent(serializedObject, Encoding.UTF8, "application/json");
 
             return await _client.SendAsync(request);
+        }
+
+        private void AddAccessKeyToHeader(HttpRequestMessage message)
+        {
+            message.Headers.Add("API", _accessToken);
         }
     }
 }
