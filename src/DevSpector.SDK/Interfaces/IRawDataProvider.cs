@@ -4,14 +4,14 @@ using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK
 {
-	public interface IRawDataProvider
+	public interface IServerDataProvider
 	{
         TOut Deserialize<TOut>(string json);
 
         string Serialize<T>(T obj);
 
-        Task<ServerResponse> GetDataFromServerAsync(string path, Dictionary<string, string> parameters = null);
+        Task<ServerResponse> GetAsync(string path, Dictionary<string, string> parameters = null);
 
-		Task<ServerResponse> PostDataToServerAsync<T>(string path, T obj, Dictionary<string, string> parameters = null);
+		Task<ServerResponse> PostAsync<T>(string path, T obj, Dictionary<string, string> parameters = null);
 	}
 }

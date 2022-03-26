@@ -9,14 +9,14 @@ namespace DevSpector.SDK
 {
     public class DevicesEditor : IDevicesEditor
     {
-        private readonly IRawDataProvider _provider;
+        private readonly IServerDataProvider _provider;
 
-        public DevicesEditor(IRawDataProvider provider) =>
+        public DevicesEditor(IServerDataProvider provider) =>
             _provider = provider;
 
 		public async Task CreateDevice(DeviceToCreate deviceInfo)
 		{
-            ServerResponse response = await _provider.PostDataToServerAsync<DeviceToCreate>(
+            ServerResponse response = await _provider.PostAsync<DeviceToCreate>(
                 "api/devices/add",
                 deviceInfo
             );

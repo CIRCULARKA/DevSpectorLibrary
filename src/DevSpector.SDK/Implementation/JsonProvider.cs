@@ -12,7 +12,7 @@ using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK
 {
-    public class JsonProvider : IRawDataProvider
+    public class JsonProvider : IServerDataProvider
     {
         private readonly HttpClient _client;
 
@@ -43,7 +43,7 @@ namespace DevSpector.SDK
         public string Serialize<T>(T obj) =>
             JsonSerializer.Serialize<T>(obj, _serializationOptions);
 
-        public async Task<ServerResponse> GetDataFromServerAsync(string path, Dictionary<string, string> parameters = null)
+        public async Task<ServerResponse> GetAsync(string path, Dictionary<string, string> parameters = null)
         {
             Uri requestUri = _builder.BuildTargetEndpoint(path, parameters);
 
@@ -55,7 +55,7 @@ namespace DevSpector.SDK
             );
         }
 
-        public async Task<ServerResponse> PostDataToServerAsync<T>(string path, T obj, Dictionary<string, string> parameteres = null)
+        public async Task<ServerResponse> PostAsync<T>(string path, T obj, Dictionary<string, string> parameteres = null)
         {
             Uri requestUri = _builder.BuildTargetEndpoint(path, parameteres);
 

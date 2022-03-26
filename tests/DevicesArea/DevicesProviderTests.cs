@@ -110,7 +110,7 @@ namespace DevSpector.Tests.SDK
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
 
-			IRawDataProvider provider = new JsonProvider(
+			IServerDataProvider provider = new JsonProvider(
 				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,
