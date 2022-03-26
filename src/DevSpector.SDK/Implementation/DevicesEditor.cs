@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using DevSpector.SDK.Exceptions;
@@ -16,6 +17,9 @@ namespace DevSpector.SDK
 
 		public async Task CreateDevice(DeviceToCreate deviceInfo)
 		{
+            if (deviceInfo == null)
+                throw new ArgumentNullException("You must provide information about device to create it");
+
             ServerResponse response = await _provider.PostAsync<DeviceToCreate>(
                 "api/devices/add",
                 deviceInfo
@@ -29,7 +33,20 @@ namespace DevSpector.SDK
 
 		public async Task DeleteDevice(string inventoryNumber)
         {
-            throw new NotImplementedException();
+            if (inventoryNumber == null)
+                throw new ArgumentNullException("You must provide inventory number to delete device");
+
+            ServerResponse response = await _provider.DeleteAsync(
+                "api/devices/remove",
+                new Dictionary<string, string> {
+                    { "inventoryNumber", inventoryNumber }
+                }
+            );
+
+            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
+                throw new UnauthorizedException("Could not delete device: no access");
+            if (!response.IsSucceed)
+                throw new InvalidOperationException($"Could not delete device: {response.ResponseStatusCode}");
         }
     }
 }
