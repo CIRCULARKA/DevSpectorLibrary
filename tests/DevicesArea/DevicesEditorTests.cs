@@ -15,8 +15,6 @@ namespace DevSpector.Tests.SDK
 	{
 		private readonly ServerConnectionFixture _connectionFixture;
 
-		private readonly IServerDataProvider _rawDataProvider;
-
 		public DevicesEditorTests(ServerConnectionFixture conFix)
 		{
 			_connectionFixture = conFix;
