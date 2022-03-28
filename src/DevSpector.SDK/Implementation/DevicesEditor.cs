@@ -48,5 +48,10 @@ namespace DevSpector.SDK
             if (!response.IsSucceed)
                 throw new InvalidOperationException($"Could not delete device: {response.ResponseStatusCode}");
         }
+
+        public async Task UpdateDevice(string targetInventoryNumber, DeviceToCreate deviceInfo)
+        {
+            throw new NotImplementedException("This method has no tests");
+        }
     }
 }

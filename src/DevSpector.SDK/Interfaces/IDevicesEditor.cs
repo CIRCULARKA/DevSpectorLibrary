@@ -8,5 +8,7 @@ namespace DevSpector.SDK
 		Task CreateDevice(DeviceToCreate deviceInfo);
 
 		Task DeleteDevice(string inventoryNumber);
+
+		Task UpdateDevice(string targetInventoryNumber, DeviceToCreate deviceInfo);
 	}
 }
