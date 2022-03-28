@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -80,20 +82,32 @@ namespace DevSpector.Tests.SDK
 		{
 			// Arrange
 			IDevicesEditor editor = await CreateDevicesEditor();
-			List<Device> devices = await _connectionFixture.GetFromServerAsync<List<Device>>(
-				"devices"
+
+			List<DeviceType> devicesTypes = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
+				"devices/types"
 			);
 
-			Device targetDevice = devices.FirstOrDefault();
+			var targetDevice = new DeviceToCreate {
+				InventoryNumber = Guid.NewGuid().ToString(),
+				ModelName = Guid.NewGuid().ToString(),
+				NetworkName = Guid.NewGuid().ToString(),
+				TypeID = devicesTypes.FirstOrDefault().ID
+			};
+
+			HttpStatusCode response = await _connectionFixture.SendChangesToServerAsync(
+				"devices/add",
+				targetDevice,
+				HttpMethod.Post
+			);
 
 			// Act
 			await editor.DeleteDevice(targetDevice.InventoryNumber);
 
-			List<Device> newDevicesList = await _connectionFixture.GetFromServerAsync<List<Device>>(
+			List<Device> actualDevices = await _connectionFixture.GetFromServerAsync<List<Device>>(
 				"devices"
 			);
 
-			Device shouldBeNull = newDevicesList.FirstOrDefault(d => d.InventoryNumber == targetDevice.InventoryNumber);
+			Device shouldBeNull = actualDevices.FirstOrDefault(d => d.InventoryNumber == targetDevice.InventoryNumber);
 
 			// Assert
 			Assert.Null(shouldBeNull);
@@ -121,7 +135,7 @@ namespace DevSpector.Tests.SDK
 			);
 
 			await Assert.ThrowsAsync<InvalidOperationException>(
-				() => editor.DeleteDevice(targetDevice.InventoryNumber)
+				() => validEditor.DeleteDevice("wrong inv numv")
 			);
 		}
 
