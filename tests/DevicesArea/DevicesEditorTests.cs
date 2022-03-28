@@ -83,22 +83,7 @@ namespace DevSpector.Tests.SDK
 			// Arrange
 			IDevicesEditor editor = await CreateDevicesEditor();
 
-			List<DeviceType> devicesTypes = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
-				"devices/types"
-			);
-
-			var targetDevice = new DeviceToCreate {
-				InventoryNumber = Guid.NewGuid().ToString(),
-				ModelName = Guid.NewGuid().ToString(),
-				NetworkName = Guid.NewGuid().ToString(),
-				TypeID = devicesTypes.FirstOrDefault().ID
-			};
-
-			HttpStatusCode response = await _connectionFixture.SendChangesToServerAsync(
-				"devices/add",
-				targetDevice,
-				HttpMethod.Post
-			);
+			var targetDevice = await CreateNewDeviceOnServerAsync();
 
 			// Act
 			await editor.DeleteDevice(targetDevice.InventoryNumber);
@@ -139,6 +124,45 @@ namespace DevSpector.Tests.SDK
 			);
 		}
 
+		[Fact]
+		public async Task CanUpdateDevice()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
+			DeviceToCreate newDevice = await CreateNewDeviceOnServerAsync();
+
+			var expectedDevice = new DeviceToCreate {
+				InventoryNumber = Guid.NewGuid().ToString(),
+				ModelName = Guid.NewGuid().ToString(),
+				NetworkName = Guid.NewGuid().ToString()
+			};
+
+			// Act
+			await editor.UpdateDevice(newDevice.InventoryNumber, expectedDevice);
+
+			Device actualDevice = await GetDeviceAsync(expectedDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(expectedDevice.InventoryNumber, actualDevice.InventoryNumber);
+			Assert.Equal(expectedDevice.ModelName, actualDevice.ModelName);
+			Assert.Equal(expectedDevice.NetworkName, actualDevice.NetworkName);
+			Assert.Equal(expectedDevice.TypeID, actualDevice.Type);
+		}
+
+		public async Task CantUpdateDevice()
+		{
+			// Arrange
+			IDevicesEditor editorWithInvalidKey = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			// Act
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => editorWithInvalidKey.UpdateDevice("invnumb", new DeviceToCreate())
+			);
+		}
+
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
@@ -153,6 +177,39 @@ namespace DevSpector.Tests.SDK
 			);
 
 			return new DevicesEditor(provider);
+		}
+
+		private async Task<DeviceToCreate> CreateNewDeviceOnServerAsync()
+		{
+			List<DeviceType> deviceTypes = await _connectionFixture.
+				GetFromServerAsync<List<DeviceType>>("devices/types");
+
+			var targetDevice = new DeviceToCreate {
+				InventoryNumber = Guid.NewGuid().ToString(),
+				ModelName = Guid.NewGuid().ToString(),
+				NetworkName = Guid.NewGuid().ToString(),
+				TypeID = deviceTypes.FirstOrDefault().ID
+			};
+
+			HttpStatusCode response = await _connectionFixture.SendChangesToServerAsync(
+				"devices/add",
+				targetDevice,
+				HttpMethod.Post
+			);
+
+			if (response != HttpStatusCode.OK)
+				throw new InvalidOperationException($"Can't continue testing: device on server wasn't created ({(int)response})");
+
+			return targetDevice;
+		}
+
+		private async Task<Device> GetDeviceAsync(string inventoryNumber)
+		{
+			List<Device> devices = await _connectionFixture.GetFromServerAsync<List<Device>>(
+				"devices"
+			);
+
+			return devices.FirstOrDefault(d => d.InventoryNumber == inventoryNumber);
 		}
 	}
 }
