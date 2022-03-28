@@ -58,7 +58,7 @@ namespace DevSpector.Tests
 
             var request = await ConstructRequestMessage(path, method, parameters, headers);
 
-            request.Content = new StringContent(SerializeObject<T>(obj));
+            request.Content = new StringContent(SerializeObject<T>(obj), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _client.SendAsync(request);
 
