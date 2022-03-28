@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Text.Json;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DevSpector.SDK.Models;
@@ -20,17 +21,8 @@ namespace DevSpector.Tests
             _client = new HttpClient();
         }
 
-        // public string ServerHostname =>
-        //     "dev-devspector.herokuapp.com";
-
-        // public string ServerHostname =>
-        //     "localhost";
-
         public string ServerHostname =>
             "dev-devspector.herokuapp.com";
-
-        // public int ServerPort =>
-        //     5000;
 
         public int ServerPort =>
             80;
@@ -38,7 +30,47 @@ namespace DevSpector.Tests
         /// <summary>
         /// Input path without trailing '/'. Uses superuser access token
         /// </summary>
-        public async Task<T> GetFromServerAsync<T>(string path, Dictionary<string, string> parameters = null)
+        public async Task<T> GetFromServerAsync<T>(
+            string path,
+            Dictionary<string, string> parameters = null,
+            Dictionary<string, string> headers = null
+        )
+        {
+            var request = await ConstructRequestMessage(path, HttpMethod.Get, parameters, headers);
+
+            var response = await _client.SendAsync(request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            return DeserializeJson<T>(responseContent);
+        }
+
+        public async Task<HttpStatusCode> SendChangesToServerAsync<T>(
+            string path,
+            T obj,
+            HttpMethod method,
+            Dictionary<string, string> parameters = null,
+            Dictionary<string, string> headers = null
+
+        )
+        {
+            if (method == HttpMethod.Head || method == HttpMethod.Get || method == HttpMethod.Trace)
+                throw new ArgumentException("Specified method not allowed");
+
+            var request = await ConstructRequestMessage(path, method, parameters, headers);
+
+            request.Content = new StringContent(SerializeObject<T>(obj));
+
+            HttpResponseMessage response = await _client.SendAsync(request);
+
+            return response.StatusCode;
+        }
+
+        private async Task<HttpRequestMessage> ConstructRequestMessage(
+            string path,
+            HttpMethod method,
+            Dictionary<string, string> parameters = null,
+            Dictionary<string, string> headers = null
+        )
         {
             // Get access key
             User superUser = await GetSuperUser();
@@ -46,7 +78,6 @@ namespace DevSpector.Tests
 
             var uriBuilder = new UriBuilder($"http://{ServerHostname}:{ServerPort}/api/{path}?api={accessKey}");
 
-            // Build uri from parameters
             if (parameters != null)
             {
                 parameters.Add("api", accessKey);
@@ -63,10 +94,13 @@ namespace DevSpector.Tests
                 uriBuilder.Query = query.ToString();
             }
 
-            var response = await _client.GetAsync(uriBuilder.Uri.ToString());
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var request = new HttpRequestMessage(method, uriBuilder.Uri);
 
-            return DeserializeJson<T>(responseContent);
+            if (headers != null)
+                foreach (var keyValuePair in headers)
+                    request.Headers.Add(keyValuePair.Key, keyValuePair.Value);
+
+            return request;
         }
 
         public async Task<User> GetSuperUser()
@@ -80,6 +114,15 @@ namespace DevSpector.Tests
         private T DeserializeJson<T>(string json) =>
             JsonSerializer.Deserialize<T>(
                 json,
+                new JsonSerializerOptions {
+                    PropertyNameCaseInsensitive = true,
+                    Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic)
+                }
+            );
+
+        private string SerializeObject<T>(T obj) =>
+            JsonSerializer.Serialize<T>(
+                obj,
                 new JsonSerializerOptions {
                     PropertyNameCaseInsensitive = true,
                     Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic)
