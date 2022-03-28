@@ -69,10 +69,14 @@ namespace DevSpector.Tests.SDK
 					InventoryNumber = Guid.NewGuid().ToString()
 				})
 			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.CreateDevice(null)
+			);
 		}
 
 		[Fact]
-		public async Task CanDeleteDevices()
+		public async Task CanDeleteDevice()
 		{
 			// Arrange
 			IDevicesEditor editor = await CreateDevicesEditor();
