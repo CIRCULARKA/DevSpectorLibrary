@@ -169,6 +169,42 @@ namespace DevSpector.Tests.SDK
 			);
 		}
 
+		[Fact]
+		public async Task CanAssignIP()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
+			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
+
+			var someFreeIPs = new string[] {
+				await GetFreeIP(),
+				await GetFreeIP()
+			};
+
+			// Act
+			foreach (var ip in someFreeIPs)
+				await editor.AssignIP(targetDevice.InventoryNumber, ip);
+
+			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(actualDevice.IPAddresses.Count, someFreeIPs.Length);
+			for (int i = 0; i < someFreeIPs.Length; i++)
+				Assert.Equal(someFreeIPs[i], actualDevice.IPAddresses[i]);
+		}
+
+		[Fact]
+		public async Task CantAssignIP()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			// Act
+		}
+
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
@@ -218,7 +254,25 @@ namespace DevSpector.Tests.SDK
 			return devices.FirstOrDefault(d => d.InventoryNumber == inventoryNumber);
 		}
 
+		private async Task DeleteDeviceFromServer(string inventoryNumber)
+		{
+			HttpStatusCode responseCode = await _connectionFixture.DeleteFromServerAsync(
+				"devices/remove",
+				new Dictionary<string, string>{ { "inventoryNumber", inventoryNumber } }
+			);
+		}
+
 		private async Task<List<DeviceType>> GetDeviceTypes() =>
 			await _connectionFixture.GetFromServerAsync<List<DeviceType>>("devices/types");
+
+		private async Task<List<string>> GetFreeIPs() =>
+			await _connectionFixture.GetFromServerAsync<List<string>>("ip/free");
+
+		private async Task<string> GetFreeIP()
+		{
+			List<string> freeIPs = await GetFreeIPs();
+
+			return freeIPs.FirstOrDefault();
+		}
 	}
 }
