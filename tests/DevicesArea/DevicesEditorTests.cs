@@ -382,6 +382,37 @@ namespace DevSpector.Tests.SDK
 			);
 		}
 
+		[Fact]
+		public async Task CanMoveDevice()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
+			List<Housing> housings = await GetHousingsAsync();
+
+			Housing expectedHousing = housings.Skip(1).FirstOrDefault();
+
+			List<Cabinet> cabinets = await GetHousingCabinetsAsync(
+				expectedHousing.HousingID
+			);
+
+			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
+
+			Cabinet expectedCabinet = cabinets.FirstOrDefault();
+
+			// Act
+			await editor.Move(
+				targetDevice.InventoryNumber,
+				expectedCabinet.CabinetID
+			);
+
+			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(expectedCabinet.CabinetName, actualDevice.Cabinet);
+			Assert.Equal(expectedHousing.HousingName, actualDevice.Housing);
+		}
+
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
@@ -481,5 +512,16 @@ namespace DevSpector.Tests.SDK
 			if (code != HttpStatusCode.OK)
 				throw new InvalidOperationException($"Can't continue testing: software wasn't added to device ({(int)code})");
 		}
+
+		private async Task<List<Housing>> GetHousingsAsync() =>
+			await _connectionFixture.GetFromServerAsync<List<Housing>>(
+				"location/housings"
+			);
+
+		private async Task<List<Cabinet>> GetHousingCabinetsAsync(string housingID) =>
+			await _connectionFixture.GetFromServerAsync<List<Cabinet>>(
+				"location/cabinets",
+				new Dictionary<string, string> { { "housingID", housingID } }
+			);
 	}
 }
