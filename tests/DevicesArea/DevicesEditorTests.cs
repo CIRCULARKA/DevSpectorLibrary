@@ -199,6 +199,23 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
+		public async Task CanAddSoftware()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
+			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
+
+			var expectedSoftware = new Software {
+				SoftwareName = Guid.NewGuid().ToString(),
+				SoftwareNameVersion = Guid.NewGuid().ToString()
+			};
+
+			// Act
+
+		}
+
+		[Fact]
 		public async Task CantAssignIP()
 		{
 			// Arrange

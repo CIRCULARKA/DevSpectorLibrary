@@ -1,4 +1,4 @@
-namespace DevSpector.SDK.DTO
+namespace DevSpector.SDK.Models
 {
     public class Software
     {
