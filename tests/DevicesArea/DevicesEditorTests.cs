@@ -413,6 +413,28 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedHousing.HousingName, actualDevice.Housing);
 		}
 
+		[Fact]
+		public async Task CantMoveDevice()
+		{
+			// Arrange
+			IDevicesEditor invalidEditor = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			// Assert
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => invalidEditor.Move("whatever", "whatever")
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.Move(null, "whatever")
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.RemoveIP("whatever", null)
+			);
+		}
+
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
