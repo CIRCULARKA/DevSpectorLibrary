@@ -150,6 +150,7 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedDevice.TypeID, actualDevice.Type);
 		}
 
+		[Fact]
 		public async Task CantUpdateDevice()
 		{
 			// Arrange
