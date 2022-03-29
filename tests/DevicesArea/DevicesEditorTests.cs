@@ -208,7 +208,7 @@ namespace DevSpector.Tests.SDK
 
 			var expectedSoftware = new Software {
 				SoftwareName = Guid.NewGuid().ToString(),
-				SoftwareNameVersion = Guid.NewGuid().ToString()
+				SoftwareVersion = Guid.NewGuid().ToString()
 			};
 
 			// Act
@@ -221,6 +221,31 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0]);
 			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0]);
 
+		}
+
+		public async Task CantAddSoftware()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			// Act
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => editor.AddSoftware("whatever", new Software { SoftwareName = "whatever" })
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.AddSoftware("whatever", new Software())
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.AddSoftware("whatever", null)
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.AddSoftware(null, new Software { SoftwareName = "whatever" })
+			);
 		}
 
 		[Fact]
