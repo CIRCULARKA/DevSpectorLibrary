@@ -176,29 +176,6 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
-		public async Task CanAssignIP()
-		{
-			// Arrange
-			IDevicesEditor editor = await CreateDevicesEditor();
-
-			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
-
-			var freeIP = await GetFreeIPAsync();
-
-			// Act
-			await editor.AssignIP(targetDevice.InventoryNumber, freeIP);
-
-			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
-
-			// Assert
-			Assert.Equal(1, actualDevice.IPAddresses.Count);
-			Assert.Equal(freeIP, actualDevice.IPAddresses[0]);
-
-			// Clear
-			await DeleteDeviceFromServerAsync(targetDevice.InventoryNumber);
-		}
-
-		[Fact]
 		public async Task CanAddSoftware()
 		{
 			// Arrange
@@ -220,6 +197,9 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(1, actualDevice.Software.Count);
 			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0].SoftwareName);
 			Assert.Equal(expectedSoftware.SoftwareVersion, actualDevice.Software[0].SoftwareVersion);
+
+			// Clear
+			await DeleteDeviceFromServerAsync(targetDevice.InventoryNumber);
 		}
 
 		[Fact]
@@ -290,6 +270,9 @@ namespace DevSpector.Tests.SDK
 
 			// Assert
 			Assert.Equal(1, actualDevice.Software.Count);
+
+			// Clear
+			await DeleteDeviceFromServerAsync(targetDevice.InventoryNumber);
 		}
 
 		[Fact]
@@ -312,6 +295,29 @@ namespace DevSpector.Tests.SDK
 			await Assert.ThrowsAsync<ArgumentNullException>(
 				() => editor.RemoveSoftware("whatever", new Software())
 			);
+		}
+
+		[Fact]
+		public async Task CanAssignIP()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
+			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
+
+			var freeIP = await GetFreeIPAsync();
+
+			// Act
+			await editor.AssignIP(targetDevice.InventoryNumber, freeIP);
+
+			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(1, actualDevice.IPAddresses.Count);
+			Assert.Equal(freeIP, actualDevice.IPAddresses[0]);
+
+			// Clear
+			await DeleteDeviceFromServerAsync(targetDevice.InventoryNumber);
 		}
 
 		[Fact]
@@ -411,6 +417,9 @@ namespace DevSpector.Tests.SDK
 			// Assert
 			Assert.Equal(expectedCabinet.CabinetName, actualDevice.Cabinet);
 			Assert.Equal(expectedHousing.HousingName, actualDevice.Housing);
+
+			// Clear
+			await DeleteDeviceFromServerAsync(targetDevice.InventoryNumber);
 		}
 
 		[Fact]
