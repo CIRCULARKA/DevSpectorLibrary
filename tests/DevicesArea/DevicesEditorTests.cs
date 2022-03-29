@@ -212,6 +212,14 @@ namespace DevSpector.Tests.SDK
 			};
 
 			// Act
+			await editor.AddSoftware(targetDevice.InventoryNumber, expectedSoftware);
+
+			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(0, actualDevice.Software.Count);
+			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0]);
+			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0]);
 
 		}
 
