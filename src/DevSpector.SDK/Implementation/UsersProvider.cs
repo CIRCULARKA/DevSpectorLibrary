@@ -9,16 +9,16 @@ namespace DevSpector.SDK
 {
     public class UsersProvider : IUsersProvider
 	{
-		private readonly IRawDataProvider _provider;
+		private readonly IServerDataProvider _provider;
 
-		public UsersProvider(IRawDataProvider provider)
+		public UsersProvider(IServerDataProvider provider)
 		{
 			_provider = provider;
 		}
 
 		public async Task<List<User>> GetUsersAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/users");
+			var response = await _provider.GetAsync("api/users");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Could not get users from server: no access");
@@ -30,7 +30,7 @@ namespace DevSpector.SDK
 
 		public async Task<List<UserGroup>> GetUserGroupsAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/users/groups");
+			var response = await _provider.GetAsync("api/users/groups");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Could not get user groups from server: no access");

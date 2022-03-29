@@ -13,8 +13,6 @@ namespace DevSpector.Tests.Common.SDK.Authorization
     {
         private readonly ServerConnectionFixture _connectionFixture;
 
-        private readonly string _hostname = "dev-devspector.herokuapp.com";
-
         private readonly string _testUserLogin = "root";
 
         private readonly string _testUserPassword = "123Abc!";
@@ -70,7 +68,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
 
-			IRawDataProvider provider = new JsonProvider(
+			IServerDataProvider provider = new JsonProvider(
 				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,

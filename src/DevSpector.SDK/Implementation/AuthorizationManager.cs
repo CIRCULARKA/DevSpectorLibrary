@@ -10,9 +10,9 @@ namespace DevSpector.SDK.Authorization
 {
     public class AuthorizationManager : IAuthorizationManager
     {
-        private readonly IRawDataProvider _provider;
+        private readonly IServerDataProvider _provider;
 
-        public AuthorizationManager(IRawDataProvider provider)
+        public AuthorizationManager(IServerDataProvider provider)
         {
             _provider = provider;
         }
@@ -24,7 +24,7 @@ namespace DevSpector.SDK.Authorization
                 { nameof(password), password }
             };
 
-            var response = await _provider.GetDataFromServerAsync(
+            var response = await _provider.GetAsync(
                 path: "api/users/authorize",
                 parameters: parameters
             );

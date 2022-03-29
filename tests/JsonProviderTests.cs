@@ -15,8 +15,6 @@ namespace DevSpector.Tests
     {
         private readonly ServerConnectionFixture _connectionFixture;
 
-        private readonly string _host = "dev-devspector.herokuapp.com";
-
         private readonly string[] _endpoints = new string[] {
             "api/users",
             "api/users/groups",
@@ -34,12 +32,12 @@ namespace DevSpector.Tests
         public async void ReturnsObjects()
         {
             // Arrange
-            IRawDataProvider provider = await CreateJsonProvider();
+            IServerDataProvider provider = await CreateJsonProvider();
 
             // Assert
             foreach (var endpoint in _endpoints)
             {
-                ServerResponse response = await provider.GetDataFromServerAsync(endpoint);
+                ServerResponse response = await provider.GetAsync(endpoint);
 
                 Assert.Equal(HttpStatusCode.OK, response.ResponseStatusCode);
                 Assert.True(response.IsSucceed);
@@ -51,14 +49,14 @@ namespace DevSpector.Tests
         public async void CantGetDataWithoutAccessKey()
         {
             // Arrange
-            var provider = await CreateJsonProvider(
+            IServerDataProvider provider = await CreateJsonProvider(
                 useWrongAccessKey: true
             );
 
             // Assert
             foreach (var endpoint in _endpoints)
             {
-                var response = await provider.GetDataFromServerAsync(endpoint);
+                var response = await provider.GetAsync(endpoint);
 
                 Assert.Equal(HttpStatusCode.Unauthorized, response.ResponseStatusCode);
                 Assert.False(response.IsSucceed);
@@ -69,7 +67,7 @@ namespace DevSpector.Tests
         public async void CanSendPostRequest()
         {
             // Arrange
-            IRawDataProvider provider = await CreateJsonProvider();
+            IServerDataProvider provider = await CreateJsonProvider();
 
             List<UserGroup> userGroups = await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
                 "users/groups"
@@ -85,7 +83,7 @@ namespace DevSpector.Tests
             };
 
             // Act
-            var response = await provider.PostDataToServerAsync<UserToCreate>(
+            var response = await provider.PostAsync<UserToCreate>(
                 "api/users/create",
                 expectedUser
             );
@@ -103,7 +101,7 @@ namespace DevSpector.Tests
             Assert.Equal(expectedUser.Patronymic, addedUser.Patronymic);
         }
 
-		private async Task<IRawDataProvider> CreateJsonProvider(bool useWrongAccessKey = false)
+		private async Task<IServerDataProvider> CreateJsonProvider(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
 

@@ -9,16 +9,16 @@ namespace DevSpector.SDK
 {
     public class DevicesProvider : IDevicesProvider
 	{
-		private readonly IRawDataProvider _provider;
+		private readonly IServerDataProvider _provider;
 
-		public DevicesProvider(IRawDataProvider provider)
+		public DevicesProvider(IServerDataProvider provider)
 		{
 			_provider = provider;
 		}
 
 		public async Task<List<Device>> GetDevicesAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/devices");
+			var response = await _provider.GetAsync("api/devices");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Failed to load devices from server: no access");
@@ -32,7 +32,7 @@ namespace DevSpector.SDK
 
 		public async Task<List<DeviceType>> GetDeviceTypesAsync()
 		{
-			var response = await _provider.GetDataFromServerAsync("api/devices/types");
+			var response = await _provider.GetAsync("api/devices/types");
 
 			if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
 				throw new UnauthorizedException("Failed to load device types from server: no access");

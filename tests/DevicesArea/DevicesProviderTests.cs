@@ -52,7 +52,10 @@ namespace DevSpector.Tests.SDK
 				var actualSoftware = actual[i].Software;
 				Assert.Equal(expectedSoftware.Count, actualSoftware.Count);
 				for (int j = 0; j < expectedSoftware.Count; j++)
-					Assert.Equal(expectedSoftware[j], actualSoftware[j]);
+				{
+					Assert.Equal(expectedSoftware[j].SoftwareName, actualSoftware[j].SoftwareName);
+					Assert.Equal(expectedSoftware[j].SoftwareVersion, actualSoftware[j].SoftwareVersion);
+				}
 			}
 		}
 
@@ -110,7 +113,7 @@ namespace DevSpector.Tests.SDK
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
 
-			IRawDataProvider provider = new JsonProvider(
+			IServerDataProvider provider = new JsonProvider(
 				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,
