@@ -52,8 +52,58 @@ namespace DevSpector.Tests.SDK
                 useWrongAccessKey: true
             );
 
+            // Assert
             await Assert.ThrowsAsync<UnauthorizedException>(
                 async () => await badProvider.GetHousingsAsync()
+            );
+        }
+
+        [Fact]
+        public async Task CanGetCabinets()
+        {
+            // Assert
+            ILocationProvider provider = await CreateLocationProviderAsync();
+
+            List<Housing> housings = await GetHousingsAsync();
+
+            var expectedCabinetsLists = new List<List<Cabinet>>();
+
+            foreach (var housing in housings)
+                expectedCabinetsLists.Add(
+                    await GetHousingCabinetsAsync(housing.HousingID)
+                );
+
+            // Act
+            var actualCabinetsLists = new List<List<Cabinet>>();
+
+            foreach (var houising in housings)
+                actualCabinetsLists.Add(
+                    await provider.GetHousingCabinetsAsync(houising.HousingID)
+                );
+
+            // Assert
+            for (int i = 0; i < expectedCabinetsLists.Count; i++)
+            {
+                Assert.Equal(expectedCabinetsLists[i].Count, actualCabinetsLists[i].Count);
+                for (int j = 0; j < expectedCabinetsLists.Count; j++)
+                {
+                    Assert.Equal(expectedCabinetsLists[i][j].CabinetID, actualCabinetsLists[i][j].CabinetID);
+                    Assert.Equal(expectedCabinetsLists[i][j].CabinetName, actualCabinetsLists[i][j].CabinetName);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CantGetHousingCabinets()
+        {
+            // Arrange
+            ILocationProvider badProvider = await CreateLocationProviderAsync(
+                useWrongAccessKey: true
+            );
+
+            // Assert
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await badProvider.GetHousingCabinetsAsync(null)
             );
         }
 
@@ -76,6 +126,12 @@ namespace DevSpector.Tests.SDK
         private async Task<List<Housing>> GetHousingsAsync() =>
             await _connectionFixture.GetFromServerAsync<List<Housing>>(
                 "location/housings"
+            );
+
+        private async Task<List<Cabinet>> GetHousingCabinetsAsync(string houisngID) =>
+            await _connectionFixture.GetFromServerAsync<List<Cabinet>>(
+                "location/housings",
+                new Dictionary<string, string> { { "housingID", houisngID } }
             );
     }
 }
