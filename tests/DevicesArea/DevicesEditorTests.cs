@@ -238,7 +238,7 @@ namespace DevSpector.Tests.SDK
 			Device actualDevice = await GetDeviceAsync(newDevice.InventoryNumber);
 
 			// Assert
-			Assert.Equal(0, actualDevice.IPAddresses.Count);
+			Assert.Empty(actualDevice.IPAddresses);
 
 			// Clear
 			await DeleteDeviceFromServerAsync(newDevice.InventoryNumber);
