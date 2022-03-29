@@ -217,10 +217,9 @@ namespace DevSpector.Tests.SDK
 			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
 
 			// Assert
-			Assert.Equal(0, actualDevice.Software.Count);
+			Assert.Equal(1, actualDevice.Software.Count);
 			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0].SoftwareName);
 			Assert.Equal(expectedSoftware.SoftwareVersion, actualDevice.Software[0].SoftwareVersion);
-
 		}
 
 		public async Task CantAddSoftware()
