@@ -14,5 +14,7 @@ namespace DevSpector.SDK
 		Task AssignIP(string inventoryNumber, string ipAddress);
 
 		Task RemoveIP(string inventoryNumber, string ipAddress);
+
+		Task AddSoftware(string inventoryNumber, Software softwareInfo);
 	}
 }

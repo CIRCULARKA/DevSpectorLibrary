@@ -80,6 +80,22 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
+		public async Task AddSoftware(string inventoryNumber, Software softwareInfo)
+        {
+            ThrowIfNull(inventoryNumber, softwareInfo);
+
+            if (softwareInfo.SoftwareName == null)
+                throw new ArgumentNullException("Software name can't be null");
+
+            ServerResponse response = await _provider.PutAsync<Software>(
+                "api/devices/add-software",
+                softwareInfo,
+                new Dictionary<string, string> { { "inventoryNumber", inventoryNumber } }
+            );
+
+            ThrowIfBadResponseStatus(response);
+        }
+
 
         private void ThrowIfNull(params object[] parameters)
         {
