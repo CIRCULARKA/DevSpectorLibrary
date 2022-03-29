@@ -52,7 +52,10 @@ namespace DevSpector.Tests.SDK
 				var actualSoftware = actual[i].Software;
 				Assert.Equal(expectedSoftware.Count, actualSoftware.Count);
 				for (int j = 0; j < expectedSoftware.Count; j++)
-					Assert.Equal(expectedSoftware[j], actualSoftware[j]);
+				{
+					Assert.Equal(expectedSoftware[j].SoftwareName, actualSoftware[j].SoftwareName);
+					Assert.Equal(expectedSoftware[j].SoftwareVersion, actualSoftware[j].SoftwareVersion);
+				}
 			}
 		}
 
