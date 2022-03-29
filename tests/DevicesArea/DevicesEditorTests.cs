@@ -52,6 +52,9 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedDevice.NetworkName, addedDevice.NetworkName);
 			Assert.Equal(expectedDevice.ModelName, addedDevice.ModelName);
 			Assert.Equal(expectedType.Name, addedDevice.Type);
+
+			// Clean
+			await DeleteDeviceFromServerAsync(addedDevice.InventoryNumber);
 		}
 
 		[Fact]
@@ -145,6 +148,9 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedDevice.ModelName, actualDevice.ModelName);
 			Assert.Equal(expectedDevice.NetworkName, actualDevice.NetworkName);
 			Assert.Equal(newDeviceType.Name, actualDevice.Type);
+
+			// Clean
+			await DeleteDeviceFromServerAsync(actualDevice.InventoryNumber);
 		}
 
 		[Fact]
@@ -203,6 +209,17 @@ namespace DevSpector.Tests.SDK
 			);
 
 			// Act
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => editor.AssignIP("whatever", "whatever")
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.AssignIP(null, "whatever")
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.AssignIP("whatever", null)
+			);
 		}
 
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
@@ -254,12 +271,15 @@ namespace DevSpector.Tests.SDK
 			return devices.FirstOrDefault(d => d.InventoryNumber == inventoryNumber);
 		}
 
-		private async Task DeleteDeviceFromServer(string inventoryNumber)
+		private async Task DeleteDeviceFromServerAsync(string inventoryNumber)
 		{
 			HttpStatusCode responseCode = await _connectionFixture.DeleteFromServerAsync(
 				"devices/remove",
 				new Dictionary<string, string>{ { "inventoryNumber", inventoryNumber } }
 			);
+
+			if (responseCode != HttpStatusCode.OK)
+				throw new InvalidOperationException($"Can't continue testing: device wasn't removed from server ({(int)responseCode})");
 		}
 
 		private async Task<List<DeviceType>> GetDeviceTypes() =>
