@@ -65,6 +65,19 @@ namespace DevSpector.Tests
             return response.StatusCode;
         }
 
+        public async Task<HttpStatusCode> DeleteFromServerAsync(
+            string path,
+            Dictionary<string, string> parameters = null,
+            Dictionary<string, string> headers = null
+        )
+        {
+            var request = await ConstructRequestMessage(path, HttpMethod.Delete, parameters, headers);
+
+            HttpResponseMessage response = await _client.SendAsync(request);
+
+            return response.StatusCode;
+        }
+
         private async Task<HttpRequestMessage> ConstructRequestMessage(
             string path,
             HttpMethod method,
