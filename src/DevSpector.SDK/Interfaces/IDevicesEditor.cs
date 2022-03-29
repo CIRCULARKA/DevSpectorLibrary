@@ -10,5 +10,7 @@ namespace DevSpector.SDK
 		Task DeleteDevice(string inventoryNumber);
 
 		Task UpdateDevice(string targetInventoryNumber, DeviceToCreate deviceInfo);
+
+		Task AssignIP(string inventoryNumber, string ipAddress);
 	}
 }

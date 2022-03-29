@@ -68,5 +68,10 @@ namespace DevSpector.SDK
             if (!response.IsSucceed)
                 throw new UnauthorizedException($"Could not update device: {response.ResponseStatusCode} ({(int)response.ResponseStatusCode})");
         }
+
+        public Task AssignIP(string inventoryNumber, string ipAddress)
+        {
+            throw new NotImplementedException("Method not tested");
+        }
     }
 }
