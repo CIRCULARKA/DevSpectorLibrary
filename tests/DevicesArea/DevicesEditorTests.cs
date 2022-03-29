@@ -28,8 +28,7 @@ namespace DevSpector.Tests.SDK
 			// Arrange
 			IDevicesEditor editor = await CreateDevicesEditor();
 
-			List<DeviceType> deviceTypes = await _connectionFixture.
-				GetFromServerAsync<List<DeviceType>>("devices/types");
+			List<DeviceType> deviceTypes = await GetDeviceTypes();
 
 			DeviceType expectedType = deviceTypes.FirstOrDefault();
 
@@ -43,9 +42,7 @@ namespace DevSpector.Tests.SDK
 			// Act
 			await editor.CreateDevice(expectedDevice);
 
-			List<Device> actualDevices = await _connectionFixture.GetFromServerAsync<List<Device>>(
-				"devices"
-			);
+			List<Device> actualDevices = await GetDevicesAsync();
 
 			Device addedDevice =
 				actualDevices.FirstOrDefault(d => d.InventoryNumber == expectedDevice.InventoryNumber);
@@ -88,9 +85,7 @@ namespace DevSpector.Tests.SDK
 			// Act
 			await editor.DeleteDevice(targetDevice.InventoryNumber);
 
-			List<Device> actualDevices = await _connectionFixture.GetFromServerAsync<List<Device>>(
-				"devices"
-			);
+			List<Device> actualDevices = await GetDevicesAsync();
 
 			Device shouldBeNull = actualDevices.FirstOrDefault(d => d.InventoryNumber == targetDevice.InventoryNumber);
 
@@ -108,9 +103,7 @@ namespace DevSpector.Tests.SDK
 
 			IDevicesEditor validEditor = await CreateDevicesEditor();
 
-			List<Device> devices = await _connectionFixture.GetFromServerAsync<List<Device>>(
-				"devices"
-			);
+			List<Device> devices = await GetDevicesAsync();
 
 			Device targetDevice = devices.FirstOrDefault();
 
@@ -132,9 +125,7 @@ namespace DevSpector.Tests.SDK
 
 			DeviceToCreate newDevice = await CreateNewDeviceOnServerAsync();
 
-			List<DeviceType> devicesTypes = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
-				"devices/types"
-			);
+			List<DeviceType> devicesTypes = await GetDeviceTypes();
 
 			DeviceType newDeviceType = devicesTypes.FirstOrDefault(dt => dt.ID == newDevice.TypeID);
 
@@ -196,8 +187,7 @@ namespace DevSpector.Tests.SDK
 
 		private async Task<DeviceToCreate> CreateNewDeviceOnServerAsync()
 		{
-			List<DeviceType> deviceTypes = await _connectionFixture.
-				GetFromServerAsync<List<DeviceType>>("devices/types");
+			List<DeviceType> deviceTypes = await GetDeviceTypes();
 
 			var targetDevice = new DeviceToCreate {
 				InventoryNumber = Guid.NewGuid().ToString(),
@@ -218,13 +208,17 @@ namespace DevSpector.Tests.SDK
 			return targetDevice;
 		}
 
+		private async Task<List<Device>> GetDevicesAsync() =>
+			await _connectionFixture.GetFromServerAsync<List<Device>>("devices");
+
 		private async Task<Device> GetDeviceAsync(string inventoryNumber)
 		{
-			List<Device> devices = await _connectionFixture.GetFromServerAsync<List<Device>>(
-				"devices"
-			);
+			List<Device> devices = await GetDevicesAsync();
 
 			return devices.FirstOrDefault(d => d.InventoryNumber == inventoryNumber);
 		}
+
+		private async Task<List<DeviceType>> GetDeviceTypes() =>
+			await _connectionFixture.GetFromServerAsync<List<DeviceType>>("devices/types");
 	}
 }
