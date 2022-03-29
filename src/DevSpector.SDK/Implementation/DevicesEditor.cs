@@ -17,24 +17,19 @@ namespace DevSpector.SDK
 
 		public async Task CreateDevice(DeviceToCreate deviceInfo)
 		{
-            if (deviceInfo == null)
-                throw new ArgumentNullException("You must provide information about device to create it");
+            ThrowIfNull(deviceInfo);
 
             ServerResponse response = await _provider.PostAsync<DeviceToCreate>(
                 "api/devices/add",
                 deviceInfo
             );
 
-            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
-                throw new UnauthorizedException("Could not create device: no access");
-            if (!response.IsSucceed)
-                throw new InvalidOperationException($"Could not create device: {response.ResponseStatusCode}");
+            ThrowIfBadResponseStatus(response);
 		}
 
 		public async Task DeleteDevice(string inventoryNumber)
         {
-            if (inventoryNumber == null)
-                throw new ArgumentNullException("You must provide inventory number to delete device");
+            ThrowIfNull(inventoryNumber);
 
             ServerResponse response = await _provider.DeleteAsync(
                 "api/devices/remove",
@@ -43,19 +38,12 @@ namespace DevSpector.SDK
                 }
             );
 
-            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
-                throw new UnauthorizedException("Could not delete device: no access");
-            if (!response.IsSucceed)
-                throw new InvalidOperationException($"Could not delete device: {response.ResponseStatusCode}");
+            ThrowIfBadResponseStatus(response);
         }
 
         public async Task UpdateDevice(string targetInventoryNumber, DeviceToCreate deviceInfo)
         {
-            if (targetInventoryNumber == null)
-                throw new ArgumentNullException("Target inventory number can't be null");
-
-            if (deviceInfo == null)
-                throw new ArgumentNullException("Info about device can't be null");
+            ThrowIfNull(targetInventoryNumber, deviceInfo);
 
             ServerResponse response = await _provider.PutAsync<DeviceToCreate>(
                 "api/devices/update",
@@ -63,15 +51,28 @@ namespace DevSpector.SDK
                 new Dictionary<string, string> { { "targetInventoryNumber", targetInventoryNumber } }
             );
 
-            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
-                throw new UnauthorizedException($"Could not update device: no access");
-            if (!response.IsSucceed)
-                throw new UnauthorizedException($"Could not update device: {response.ResponseStatusCode} ({(int)response.ResponseStatusCode})");
+            ThrowIfBadResponseStatus(response);
         }
 
         public Task AssignIP(string inventoryNumber, string ipAddress)
         {
+            ThrowIfNull(inventoryNumber, ipAddress);
+
             throw new NotImplementedException("Method not tested");
+        }
+
+        private void ThrowIfNull(params object[] parameters)
+        {
+            foreach (var param in parameters)
+                if (param == null) throw new ArgumentNullException();
+        }
+
+        private void ThrowIfBadResponseStatus(ServerResponse response)
+        {
+            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
+                throw new UnauthorizedException($"Could not proceed operation: no access");
+            if (!response.IsSucceed)
+                throw new InvalidOperationException($"Could not proceed operation: {response.ResponseStatusCode} ({(int)response.ResponseStatusCode})");
         }
     }
 }
