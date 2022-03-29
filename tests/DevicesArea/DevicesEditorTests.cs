@@ -183,7 +183,7 @@ namespace DevSpector.Tests.SDK
 
 			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
 
-			var freeIP = await GetFreeIP();
+			var freeIP = await GetFreeIPAsync();
 
 			// Act
 			await editor.AssignIP(targetDevice.InventoryNumber, freeIP);
@@ -193,6 +193,9 @@ namespace DevSpector.Tests.SDK
 			// Assert
 			Assert.Equal(1, actualDevice.IPAddresses.Count);
 			Assert.Equal(freeIP, actualDevice.IPAddresses[0]);
+
+			// Clear
+			await DeleteDeviceFromServerAsync(targetDevice.InventoryNumber);
 		}
 
 		[Fact]
@@ -224,6 +227,43 @@ namespace DevSpector.Tests.SDK
 			IDevicesEditor editor = await CreateDevicesEditor();
 
 			DeviceToCreate newDevice = await CreateNewDeviceOnServerAsync();
+
+			string targetIP = await GetFreeIPAsync();
+
+			await AddIPToDeviceAsync(newDevice.InventoryNumber, targetIP);
+
+			// Act
+			await editor.RemoveIP(newDevice.InventoryNumber, targetIP);
+
+			Device actualDevice = await GetDeviceAsync(newDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(0, actualDevice.IPAddresses.Count);
+
+			// Clear
+			await DeleteDeviceFromServerAsync(newDevice.InventoryNumber);
+		}
+
+		[Fact]
+		public async Task CantRemoveIP()
+		{
+			// Arrange
+			IDevicesEditor invalidEditor = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			// Assert
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => invalidEditor.RemoveIP("whatever", "whatever")
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.RemoveIP(null, "whatever")
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.RemoveIP("whatever", null)
+			);
 		}
 
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
@@ -289,17 +329,17 @@ namespace DevSpector.Tests.SDK
 		private async Task<List<DeviceType>> GetDeviceTypes() =>
 			await _connectionFixture.GetFromServerAsync<List<DeviceType>>("devices/types");
 
-		private async Task<List<string>> GetFreeIPs() =>
+		private async Task<List<string>> GetFreeIPsAsync() =>
 			await _connectionFixture.GetFromServerAsync<List<string>>("ip/free");
 
-		private async Task<string> GetFreeIP()
+		private async Task<string> GetFreeIPAsync()
 		{
-			List<string> freeIPs = await GetFreeIPs();
+			List<string> freeIPs = await GetFreeIPsAsync();
 
 			return freeIPs.FirstOrDefault();
 		}
 
-		private async Task AddIPToDevice(string inventoryNumber, string ip)
+		private async Task AddIPToDeviceAsync(string inventoryNumber, string ip)
 		{
 			HttpStatusCode responseCode = await _connectionFixture.SendChangesToServerAsync<string>(
 				"devices/add-ip",
@@ -307,6 +347,9 @@ namespace DevSpector.Tests.SDK
 				HttpMethod.Put,
 				new Dictionary<string, string> { { "inventoryNumber", inventoryNumber } }
 			);
+
+			if (responseCode != HttpStatusCode.OK)
+				throw new InvalidOperationException($"Can't continue testing: ip address wasn't assigned to device ({(int)responseCode})");
 		}
 	}
 }
