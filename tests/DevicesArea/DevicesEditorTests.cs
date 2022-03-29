@@ -183,21 +183,16 @@ namespace DevSpector.Tests.SDK
 
 			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
 
-			var someFreeIPs = new string[] {
-				await GetFreeIP(),
-				await GetFreeIP()
-			};
+			var freeIP = await GetFreeIP();
 
 			// Act
-			foreach (var ip in someFreeIPs)
-				await editor.AssignIP(targetDevice.InventoryNumber, ip);
+			await editor.AssignIP(targetDevice.InventoryNumber, freeIP);
 
 			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
 
 			// Assert
-			Assert.Equal(actualDevice.IPAddresses.Count, someFreeIPs.Length);
-			for (int i = 0; i < someFreeIPs.Length; i++)
-				Assert.Equal(someFreeIPs[i], actualDevice.IPAddresses[i]);
+			Assert.Equal(1, actualDevice.IPAddresses.Count);
+			Assert.Equal(freeIP, actualDevice.IPAddresses[0]);
 		}
 
 		[Fact]

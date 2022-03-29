@@ -58,13 +58,13 @@ namespace DevSpector.SDK
         {
             ThrowIfNull(inventoryNumber, ipAddress);
 
-            ServerResponse resposne = await _provider.PutAsync<string>(
+            ServerResponse response = await _provider.PutAsync<string>(
                 "api/devices/add-ip",
                 ipAddress,
                 new Dictionary<string, string> { { "inventoryNumber", inventoryNumber } }
             );
 
-            ThrowIfBadResponseStatus(resposne);
+            ThrowIfBadResponseStatus(response);
         }
 
         private void ThrowIfNull(params object[] parameters)
