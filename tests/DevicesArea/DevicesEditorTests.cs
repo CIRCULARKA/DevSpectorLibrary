@@ -218,8 +218,8 @@ namespace DevSpector.Tests.SDK
 
 			// Assert
 			Assert.Equal(0, actualDevice.Software.Count);
-			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0]);
-			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0]);
+			Assert.Equal(expectedSoftware.SoftwareName, actualDevice.Software[0].SoftwareName);
+			Assert.Equal(expectedSoftware.SoftwareVersion, actualDevice.Software[0].SoftwareVersion);
 
 		}
 
