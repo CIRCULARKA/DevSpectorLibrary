@@ -217,6 +217,15 @@ namespace DevSpector.Tests.SDK
 			);
 		}
 
+		[Fact]
+		public async Task CanRemoveIP()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
+			DeviceToCreate newDevice = await CreateNewDeviceOnServerAsync();
+		}
+
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
@@ -288,6 +297,16 @@ namespace DevSpector.Tests.SDK
 			List<string> freeIPs = await GetFreeIPs();
 
 			return freeIPs.FirstOrDefault();
+		}
+
+		private async Task AddIPToDevice(string inventoryNumber, string ip)
+		{
+			HttpStatusCode responseCode = await _connectionFixture.SendChangesToServerAsync<string>(
+				"devices/add-ip",
+				ip,
+				HttpMethod.Put,
+				new Dictionary<string, string> { { "inventoryNumber", inventoryNumber } }
+			);
 		}
 	}
 }
