@@ -7,7 +7,7 @@ namespace DevSpector.SDK.Models
 	{
 		public Device(Guid id, string inventoryNumber, string modelName, string type,
 			string networkName, string housing, string cabinet,
-			List<string> ipAddresses, List<string> software)
+			List<string> ipAddresses, List<Software> software)
 		{
 			ID = id;
 			InventoryNumber = inventoryNumber;
@@ -36,6 +36,6 @@ namespace DevSpector.SDK.Models
 
 		public List<string> IPAddresses { get; }
 
-		public List<string> Software { get; }
+		public List<Software> Software { get; }
 	}
 }
