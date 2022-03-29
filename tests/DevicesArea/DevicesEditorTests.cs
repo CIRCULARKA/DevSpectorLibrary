@@ -132,6 +132,12 @@ namespace DevSpector.Tests.SDK
 
 			DeviceToCreate newDevice = await CreateNewDeviceOnServerAsync();
 
+			List<DeviceType> devicesTypes = await _connectionFixture.GetFromServerAsync<List<DeviceType>>(
+				"devices/types"
+			);
+
+			DeviceType newDeviceType = devicesTypes.FirstOrDefault(dt => dt.ID == newDevice.TypeID);
+
 			var expectedDevice = new DeviceToCreate {
 				InventoryNumber = Guid.NewGuid().ToString(),
 				ModelName = Guid.NewGuid().ToString(),
@@ -147,7 +153,7 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedDevice.InventoryNumber, actualDevice.InventoryNumber);
 			Assert.Equal(expectedDevice.ModelName, actualDevice.ModelName);
 			Assert.Equal(expectedDevice.NetworkName, actualDevice.NetworkName);
-			Assert.Equal(expectedDevice.TypeID, actualDevice.Type);
+			Assert.Equal(newDeviceType.Name, actualDevice.Type);
 		}
 
 		[Fact]
