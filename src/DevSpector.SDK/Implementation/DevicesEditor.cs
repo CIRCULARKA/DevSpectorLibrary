@@ -69,8 +69,6 @@ namespace DevSpector.SDK
 
 		public async Task RemoveIP(string inventoryNumber, string ipAddress)
         {
-            throw new NotImplementedException("Method not tested yet");
-
             ThrowIfNull(inventoryNumber, ipAddress);
 
             ServerResponse response = await _provider.PutAsync<string>(
