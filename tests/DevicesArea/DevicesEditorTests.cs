@@ -222,6 +222,7 @@ namespace DevSpector.Tests.SDK
 			Assert.Equal(expectedSoftware.SoftwareVersion, actualDevice.Software[0].SoftwareVersion);
 		}
 
+		[Fact]
 		public async Task CantAddSoftware()
 		{
 			// Arrange
