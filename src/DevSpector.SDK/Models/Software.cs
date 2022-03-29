@@ -4,6 +4,6 @@ namespace DevSpector.SDK.Models
     {
         public string SoftwareName { get; set; }
 
-        public string SoftwareNameVersion { get; set; }
+        public string SoftwareVersion { get; set; }
     }
 }
