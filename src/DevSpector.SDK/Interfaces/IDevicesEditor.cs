@@ -19,5 +19,7 @@ namespace DevSpector.SDK
 		Task AddSoftware(string inventoryNumber, Software softwareInfo);
 
 		Task RemoveSoftware(string inventoryNumber, Software softwareInfo);
+
+		Task Move(string inventoryNumber, string cabinetID);
 	}
 }
