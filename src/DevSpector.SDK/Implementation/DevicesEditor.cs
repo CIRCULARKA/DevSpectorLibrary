@@ -54,11 +54,17 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
-        public Task AssignIP(string inventoryNumber, string ipAddress)
+        public async Task AssignIP(string inventoryNumber, string ipAddress)
         {
             ThrowIfNull(inventoryNumber, ipAddress);
 
-            throw new NotImplementedException("Method not tested");
+            ServerResponse resposne = await _provider.PutAsync<string>(
+                "api/devices/add-ip",
+                ipAddress,
+                new Dictionary<string, string> { { "inventoryNumber", inventoryNumber } }
+            );
+
+            ThrowIfBadResponseStatus(resposne);
         }
 
         private void ThrowIfNull(params object[] parameters)
