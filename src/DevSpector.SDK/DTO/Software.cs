@@ -2,8 +2,8 @@ namespace DevSpector.SDK.DTO
 {
     public class Software
     {
-        public string Name { get; set; }
+        public string SoftwareName { get; set; }
 
-        public string Version { get; set; }
+        public string SoftwareNameVersion { get; set; }
     }
 }
