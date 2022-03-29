@@ -114,12 +114,10 @@ namespace DevSpector.SDK
 
         public async Task Move(string inventoryNumber, string cabinetID)
         {
-            throw new NotImplementedException("Method not tested yet");
-
             ThrowIfNull(inventoryNumber, cabinetID);
 
             ServerResponse response = await _provider.PutAsync<string>(
-                "api/devices/remove-software",
+                "api/devices/move",
                 cabinetID,
                 new Dictionary<string, string> { { "inventoryNumber", inventoryNumber } }
             );
