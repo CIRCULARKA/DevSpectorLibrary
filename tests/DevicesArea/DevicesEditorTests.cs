@@ -161,6 +161,14 @@ namespace DevSpector.Tests.SDK
 			await Assert.ThrowsAsync<UnauthorizedException>(
 				() => editorWithInvalidKey.UpdateDevice("invnumb", new DeviceToCreate())
 			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editorWithInvalidKey.UpdateDevice(null, new DeviceToCreate())
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editorWithInvalidKey.UpdateDevice("invnum", null)
+			);
 		}
 
 		private async Task<IDevicesEditor> CreateDevicesEditor(bool useWrongAccessKey = false)
