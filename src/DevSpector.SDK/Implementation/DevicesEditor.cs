@@ -51,7 +51,22 @@ namespace DevSpector.SDK
 
         public async Task UpdateDevice(string targetInventoryNumber, DeviceToCreate deviceInfo)
         {
-            throw new NotImplementedException("This method has no tests");
+            if (targetInventoryNumber == null)
+                throw new ArgumentNullException("Target inventory number can't be null");
+
+            if (deviceInfo == null)
+                throw new ArgumentNullException("Info about device can't be null");
+
+            ServerResponse response = await _provider.PutAsync<DeviceToCreate>(
+                "api/devices/update",
+                deviceInfo,
+                new Dictionary<string, string> { { "targetInventoryNumber", targetInventoryNumber } }
+            );
+
+            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
+                throw new UnauthorizedException($"Could not update device: no access");
+            if (!response.IsSucceed)
+                throw new UnauthorizedException($"Could not update device: {response.ResponseStatusCode} ({(int)response.ResponseStatusCode})");
         }
     }
 }
