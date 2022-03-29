@@ -249,6 +249,72 @@ namespace DevSpector.Tests.SDK
 		}
 
 		[Fact]
+		public async Task CanRemoveSoftware()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor();
+
+			DeviceToCreate targetDevice = await CreateNewDeviceOnServerAsync();
+
+			var firstSoft = new Software {
+				SoftwareName = "SoftWithManyVersions",
+				SoftwareVersion = Guid.NewGuid().ToString()
+			};
+
+			var secondSoft = new Software {
+				SoftwareName = firstSoft.SoftwareName,
+				SoftwareVersion = Guid.NewGuid().ToString()
+			};
+
+			var thirdSoft = new Software {
+				SoftwareName = "SecondSoftManyVersions",
+				SoftwareVersion = Guid.NewGuid().ToString()
+			};
+
+			var fourthSoft = new Software {
+				SoftwareName = thirdSoft.SoftwareName,
+				SoftwareVersion = Guid.NewGuid().ToString()
+			};
+
+			await AddSoftwareToDeviceAsync(targetDevice.InventoryNumber, firstSoft);
+			await AddSoftwareToDeviceAsync(targetDevice.InventoryNumber, secondSoft);
+			await AddSoftwareToDeviceAsync(targetDevice.InventoryNumber, thirdSoft);
+			await AddSoftwareToDeviceAsync(targetDevice.InventoryNumber, fourthSoft);
+
+			// Act
+			// Should delete software and all its versions
+			await editor.RemoveSoftware(targetDevice.InventoryNumber, new Software { SoftwareName = firstSoft.SoftwareName });
+			await editor.RemoveSoftware(targetDevice.InventoryNumber, thirdSoft);
+
+			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
+
+			// Assert
+			Assert.Equal(1, actualDevice.Software.Count);
+		}
+
+		[Fact]
+		public async Task CantRemoveSoftware()
+		{
+			// Arrange
+			IDevicesEditor editor = await CreateDevicesEditor(
+				useWrongAccessKey: true
+			);
+
+			// Act
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => editor.RemoveSoftware("whatever", new Software { SoftwareName = "whatever" })
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.RemoveSoftware(null, new Software { SoftwareName = "whatever" })
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => editor.RemoveSoftware("whatever", new Software())
+			);
+		}
+
+		[Fact]
 		public async Task CantAssignIP()
 		{
 			// Arrange
@@ -400,6 +466,20 @@ namespace DevSpector.Tests.SDK
 
 			if (responseCode != HttpStatusCode.OK)
 				throw new InvalidOperationException($"Can't continue testing: ip address wasn't assigned to device ({(int)responseCode})");
+		}
+
+		private async Task AddSoftwareToDeviceAsync(string inventoryNumber, Software soft)
+		{
+			HttpStatusCode code =  await _connectionFixture.SendChangesToServerAsync<Software>(
+				"devices/add-software",
+				soft,
+				HttpMethod.Put,
+				new Dictionary<string, string> { { "inventoryNumber", inventoryNumber } }
+			);
+
+
+			if (code != HttpStatusCode.OK)
+				throw new InvalidOperationException($"Can't continue testing: software wasn't added to device ({(int)code})");
 		}
 	}
 }
