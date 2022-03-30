@@ -29,7 +29,14 @@ namespace DevSpector.Tests.Server.SDK
 			// Arrange
 			IUsersEditor editor = await CreateUsersEditorAsync();
 
-			var expectedUser = await CreateUserOnServerAsync();
+			var expectedUser = new UserToCreate {
+				Login = Guid.NewGuid().ToString(),
+				Password = Guid.NewGuid().ToString(),
+				FirstName = Guid.NewGuid().ToString(),
+				Surname = Guid.NewGuid().ToString(),
+				Patronymic = Guid.NewGuid().ToString(),
+				GroupID = Guid.NewGuid().ToString()
+			};
 
 			// Act
 			await editor.CreateUser(expectedUser);
