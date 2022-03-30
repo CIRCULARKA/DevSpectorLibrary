@@ -41,7 +41,15 @@ namespace DevSpector.SDK.Editors
 
         public async Task UpdateUser(string targetLogin, UserToCreate newUserInfo)
         {
-            throw new NotImplementedException("Method not tested");
+            ThrowIfNull(targetLogin, newUserInfo);
+
+            ServerResponse response = await _provider.PutAsync<UserToCreate>(
+                "api/users/update",
+                newUserInfo,
+                new Dictionary<string, string> { { "targetUserLogin", targetLogin } }
+            );
+
+            ThrowIfBadResponseStatus(response);
         }
     }
 }
