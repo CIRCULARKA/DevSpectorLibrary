@@ -1,4 +1,4 @@
-namespace DevSpector.SDK.Models
+namespace DevSpector.SDK.DTO
 {
     public class UserToCreate
     {
