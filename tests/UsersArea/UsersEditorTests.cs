@@ -147,13 +147,15 @@ namespace DevSpector.Tests.Server.SDK
 
 		private async Task<UserToCreate> CreateUserOnServerAsync()
 		{
+			List<UserGroup> groups = await GetUserGroupsAsync();
+
 			var result = new UserToCreate {
 				Login = Guid.NewGuid().ToString(),
 				Password = Guid.NewGuid().ToString(),
 				FirstName = Guid.NewGuid().ToString(),
 				Surname = Guid.NewGuid().ToString(),
 				Patronymic = Guid.NewGuid().ToString(),
-				GroupID = Guid.NewGuid().ToString()
+				GroupID = groups.FirstOrDefault().ID
 			};
 
 			await _connectionFixture.SendChangesToServerAsync<UserToCreate>(
