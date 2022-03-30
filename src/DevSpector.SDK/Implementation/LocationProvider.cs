@@ -14,12 +14,25 @@ namespace DevSpector.SDK.Providers
 
         public async Task<List<Housing>> GetHousingsAsync()
         {
-            throw new NotImplementedException();
+            ServerResponse response = await _provider.GetAsync("api/location/housings");
+
+            ThrowIfBadResponseStatus(response);
+
+            return _provider.Deserialize<List<Housing>>(response.ResponseContent);
         }
 
         public async Task<List<Cabinet>> GetHousingCabinetsAsync(string housingID)
         {
-            throw new NotImplementedException();
+            ThrowIfNull(housingID);
+
+            ServerResponse response = await _provider.GetAsync(
+                "api/location/cabinets",
+                new Dictionary<string, string> { { "housingID", housingID } }
+            );
+
+            ThrowIfBadResponseStatus(response);
+
+            return _provider.Deserialize<List<Cabinet>>(response.ResponseContent);
         }
     }
 }
