@@ -130,6 +130,56 @@ namespace DevSpector.Tests.Server.SDK
 			);
 		}
 
+		[Fact]
+		public async Task CanUpdateUser()
+		{
+			// Arrange
+			IUsersEditor editor = await CreateUsersEditorAsync();
+
+			UserToCreate targetUser = await CreateUserOnServerAsync();
+
+			var expectedUser = new UserToCreate {
+				Login = Guid.NewGuid().ToString(),
+				FirstName = Guid.NewGuid().ToString(),
+				Surname = Guid.NewGuid().ToString(),
+				Patronymic = Guid.NewGuid().ToString()
+			};
+
+			// Act
+			await editor.UpdateUser(targetUser.Login, expectedUser);
+
+			User actualUser = await GetUserFromServerAsync(expectedUser.Login);
+
+			// Assert
+			Assert.NotNull(actualUser);
+			Assert.Equal(expectedUser.Login, actualUser.Login);
+			Assert.Equal(expectedUser.FirstName, actualUser.FirstName);
+			Assert.Equal(expectedUser.Surname, actualUser.Surname);
+			Assert.Equal(expectedUser.Patronymic, actualUser.Patronymic);
+		}
+
+		[Fact]
+		public async Task CantUpdateUser()
+		{
+			// Arrange
+			IUsersEditor invalidEditor = await CreateUsersEditorAsync(
+				useWrongAccessKey: true
+			);
+
+			// Assert
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => invalidEditor.UpdateUser("whatever", new UserToCreate())
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.UpdateUser(null, new UserToCreate())
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.UpdateUser("whatever", null)
+			);
+		}
+
 		private async Task<IUsersEditor> CreateUsersEditorAsync(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
