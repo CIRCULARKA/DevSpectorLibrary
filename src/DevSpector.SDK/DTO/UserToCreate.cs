@@ -8,10 +8,10 @@ namespace DevSpector.SDK.DTO
 
         public string GroupID { get; set; }
 
-		public string FirstName { get; }
+		public string FirstName { get; set; }
 
-		public string Surname { get; }
+		public string Surname { get; set; }
 
-		public string Patronymic { get; }
+		public string Patronymic { get; set; }
     }
 }
