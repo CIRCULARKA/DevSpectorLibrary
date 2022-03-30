@@ -33,5 +33,10 @@ namespace DevSpector.SDK.Authorization
 
             return _provider.Deserialize<User>(response.ResponseContent);
         }
+
+        public Task<string> RevokeKey(string login, string password)
+        {
+            throw new NotImplementedException("Method not tested yet");
+        }
     }
 }
