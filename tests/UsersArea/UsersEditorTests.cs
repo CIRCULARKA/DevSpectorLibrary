@@ -29,13 +29,15 @@ namespace DevSpector.Tests.Server.SDK
 			// Arrange
 			IUsersEditor editor = await CreateUsersEditorAsync();
 
+			List<UserGroup> userGroups = await GetUserGroupsAsync();
+
 			var expectedUser = new UserToCreate {
 				Login = Guid.NewGuid().ToString(),
 				Password = Guid.NewGuid().ToString(),
 				FirstName = Guid.NewGuid().ToString(),
 				Surname = Guid.NewGuid().ToString(),
 				Patronymic = Guid.NewGuid().ToString(),
-				GroupID = Guid.NewGuid().ToString()
+				GroupID = userGroups.FirstOrDefault().ID
 			};
 
 			// Act
@@ -60,11 +62,36 @@ namespace DevSpector.Tests.Server.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => invalidEditor.CreateUser(new UserToCreate())
+				() => invalidEditor.CreateUser(new UserToCreate() {
+					Login = "whatever",
+					Password = "whatever",
+					GroupID = "whatever"
+				})
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
 				() => invalidEditor.CreateUser(null)
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.CreateUser(new UserToCreate {
+					Login = "whatever",
+					Password = "whatever"
+				})
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.CreateUser(new UserToCreate {
+					Password = "whatever",
+					GroupID = "whatever"
+				})
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.CreateUser(new UserToCreate {
+					Login = "whatever",
+					GroupID = "whatever"
+				})
 			);
 		}
 
@@ -111,6 +138,11 @@ namespace DevSpector.Tests.Server.SDK
 
 			return users.FirstOrDefault(u => u.Login == login);
 		}
+
+		private async Task<List<UserGroup>> GetUserGroupsAsync() =>
+			await _connectionFixture.GetFromServerAsync<List<UserGroup>>(
+				"users/groups"
+			);
 
 		private async Task RemoveUserFromServerAsync(string login)
 		{
