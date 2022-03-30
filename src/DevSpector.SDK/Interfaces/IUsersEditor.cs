@@ -8,5 +8,7 @@ namespace DevSpector.SDK.Editors
         Task CreateUser(UserToCreate userInfo);
 
         Task DeleteUser(string login);
+
+        Task UpdateUser(string targetLogin, UserToCreate newUserInfo);
     }
 }

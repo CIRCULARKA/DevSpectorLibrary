@@ -38,5 +38,10 @@ namespace DevSpector.SDK.Editors
 
             ThrowIfBadResponseStatus(response);
         }
+
+        public async Task UpdateUser(string targetLogin, UserToCreate newUserInfo)
+        {
+            throw new NotImplementedException("Method not tested");
+        }
     }
 }
