@@ -5,7 +5,7 @@ using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK.Providers
 {
-    public class LocationProvider : ILocationProvider
+    public class LocationProvider : SdkTool, ILocationProvider
     {
         private readonly IServerDataProvider _provider;
 
