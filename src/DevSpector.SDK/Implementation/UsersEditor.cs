@@ -1,10 +1,10 @@
-using System;
 using System.Threading.Tasks;
 using DevSpector.SDK.DTO;
+using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK.Editors
 {
-    public class UsersEditor : IUsersEditor
+    public class UsersEditor : SdkTool, IUsersEditor
     {
         private readonly IServerDataProvider _provider;
 
@@ -13,9 +13,16 @@ namespace DevSpector.SDK.Editors
             _provider = provider;
         }
 
-        public Task CreateUser(UserToCreate userInfo)
+        public async Task CreateUser(UserToCreate userInfo)
         {
-            throw new NotImplementedException("Method not tested yet");
+            ThrowIfNull(userInfo, userInfo?.Login, userInfo?.Password, userInfo?.GroupID);
+
+            ServerResponse response = await _provider.PostAsync<UserToCreate>(
+                "api/users/create",
+                userInfo
+            );
+
+            ThrowIfBadResponseStatus(response);
         }
     }
 }
