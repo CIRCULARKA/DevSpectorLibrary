@@ -95,6 +95,41 @@ namespace DevSpector.Tests.Server.SDK
 			);
 		}
 
+		[Fact]
+		public async Task CanDeleteUser()
+		{
+			// Arrange
+			IUsersEditor editor = await CreateUsersEditorAsync();
+
+			UserToCreate targetUser = await CreateUserOnServerAsync();
+
+			// Act
+			await editor.DeleteUser(targetUser.Login);
+
+			User shouldBeNull = await GetUserFromServerAsync(targetUser.Login);
+
+			// Assert
+			Assert.Null(shouldBeNull);
+		}
+
+		[Fact]
+		public async Task CantDeleteUser()
+		{
+			// Arrange
+			IUsersEditor invalidEditor = await CreateUsersEditorAsync(
+				useWrongAccessKey: true
+			);
+
+			// Assert
+			await Assert.ThrowsAsync<UnauthorizedException>(
+				() => invalidEditor.DeleteUser("whatever")
+			);
+
+			await Assert.ThrowsAsync<ArgumentNullException>(
+				() => invalidEditor.DeleteUser(null)
+			);
+		}
+
 		private async Task<IUsersEditor> CreateUsersEditorAsync(bool useWrongAccessKey = false)
 		{
 			User superUser = await _connectionFixture.GetSuperUser();
