@@ -1,12 +1,8 @@
 using System;
-using System.Net;
-using System.Net.Http;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
-using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
 using DevSpector.SDK.Exceptions;
 using DevSpector.SDK.Providers;
