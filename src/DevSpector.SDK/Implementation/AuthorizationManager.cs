@@ -8,7 +8,7 @@ using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK.Authorization
 {
-    public class AuthorizationManager : IAuthorizationManager
+    public class AuthorizationManager : SdkTool, IAuthorizationManager
     {
         private readonly IServerDataProvider _provider;
 
@@ -29,10 +29,7 @@ namespace DevSpector.SDK.Authorization
                 parameters: parameters
             );
 
-            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
-                throw new InvalidOperationException("Could not authorize on server: wrong credentials");
-            if (!response.IsSucceed)
-                throw new InvalidOperationException($"Could not authorize on server: error {response.ResponseStatusCode}");
+            ThrowIfBadResponseStatus(response);
 
             return _provider.Deserialize<User>(response.ResponseContent);
         }
