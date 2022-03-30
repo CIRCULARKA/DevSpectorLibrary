@@ -20,6 +20,5 @@ namespace DevSpector.SDK
             if (!response.IsSucceed)
                 throw new InvalidOperationException($"Could not proceed operation: {response.ResponseStatusCode} ({(int)response.ResponseStatusCode})");
         }
-
     }
 }
