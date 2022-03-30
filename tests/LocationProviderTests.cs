@@ -59,7 +59,7 @@ namespace DevSpector.Tests.SDK
         }
 
         [Fact]
-        public async Task CanGetCabinets()
+        public async Task CanGetHousingCabinets()
         {
             // Assert
             ILocationProvider provider = await CreateLocationProviderAsync();
@@ -85,7 +85,7 @@ namespace DevSpector.Tests.SDK
             for (int i = 0; i < expectedCabinetsLists.Count; i++)
             {
                 Assert.Equal(expectedCabinetsLists[i].Count, actualCabinetsLists[i].Count);
-                for (int j = 0; j < expectedCabinetsLists.Count; j++)
+                for (int j = 0; j < expectedCabinetsLists[i].Count; j++)
                 {
                     Assert.Equal(expectedCabinetsLists[i][j].CabinetID, actualCabinetsLists[i][j].CabinetID);
                     Assert.Equal(expectedCabinetsLists[i][j].CabinetName, actualCabinetsLists[i][j].CabinetName);
@@ -103,6 +103,10 @@ namespace DevSpector.Tests.SDK
 
             // Assert
             await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await badProvider.GetHousingCabinetsAsync("whatever")
+            );
+
+            await Assert.ThrowsAsync<ArgumentNullException>(
                 async () => await badProvider.GetHousingCabinetsAsync(null)
             );
         }
@@ -130,7 +134,7 @@ namespace DevSpector.Tests.SDK
 
         private async Task<List<Cabinet>> GetHousingCabinetsAsync(string houisngID) =>
             await _connectionFixture.GetFromServerAsync<List<Cabinet>>(
-                "location/housings",
+                "location/cabinets",
                 new Dictionary<string, string> { { "housingID", houisngID } }
             );
     }
