@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
@@ -28,7 +29,14 @@ namespace DevSpector.SDK.Editors
 
         public async Task DeleteUser(string login)
         {
-            throw new NotImplementedException("Not tested yet");
+            ThrowIfNull(login);
+
+            ServerResponse response = await _provider.DeleteAsync(
+                "api/users/remove",
+                new Dictionary<string, string> { { "login", login } }
+            );
+
+            ThrowIfBadResponseStatus(response);
         }
     }
 }
