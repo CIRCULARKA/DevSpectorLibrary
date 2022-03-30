@@ -6,5 +6,7 @@ namespace DevSpector.SDK.Editors
     public interface IUsersEditor
     {
         Task CreateUser(UserToCreate userInfo);
+
+        Task DeleteUser(string login);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
@@ -23,6 +24,11 @@ namespace DevSpector.SDK.Editors
             );
 
             ThrowIfBadResponseStatus(response);
+        }
+
+        public async Task DeleteUser(string login)
+        {
+            throw new NotImplementedException("Not tested yet");
         }
     }
 }
