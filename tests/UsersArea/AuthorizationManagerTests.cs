@@ -27,7 +27,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CanGetUser()
         {
             // Arrange
-            var manager = await CreateAuthManagerAsync();
+            var manager = CreateAuthManager();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
             User createdTargetUser = await GetUserByLoginAsync(targetUser.Login);
@@ -51,7 +51,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CantGetUser()
         {
             // Arrange
-            var manager = await CreateAuthManagerAsync();
+            var manager = CreateAuthManager();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
 
@@ -84,7 +84,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CanRevokeKey()
         {
             // Arrange
-            IAuthorizationManager manager = await CreateAuthManagerAsync();
+            IAuthorizationManager manager = CreateAuthManager();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
             User createdUser = await GetUserByLoginAsync(targetUser.Login);
@@ -102,7 +102,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CantRevokeKey()
         {
             // Arrange
-            IAuthorizationManager manager = await CreateAuthManagerAsync();
+            IAuthorizationManager manager = CreateAuthManager();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
 
@@ -131,12 +131,9 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             await DeleteUserAsync(targetUser.Login);
         }
 
-		private async Task<IAuthorizationManager> CreateAuthManagerAsync(bool useWrongAccessKey = false)
+		private IAuthorizationManager CreateAuthManager(bool useWrongAccessKey = false)
 		{
-			User superUser = await _connectionFixture.GetSuperUser();
-
 			IServerDataProvider provider = new JsonProvider(
-				useWrongAccessKey ? "wrongKey ": superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,
 					scheme: "https"
