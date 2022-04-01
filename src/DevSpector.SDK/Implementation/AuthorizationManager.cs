@@ -51,7 +51,7 @@ namespace DevSpector.SDK.Authorization
 
             ThrowIfBadResponseStatus(response);
 
-            return _provider.Deserialize<string>(response.ResponseContent);
+            return response.ResponseContent;
         }
     }
 }
