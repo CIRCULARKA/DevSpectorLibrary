@@ -56,6 +56,14 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             UserToCreate targetUser = await CreateUserOnServerAsync();
 
             // Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                await manager.TryToSignInAsync(null, "whatever")
+            );
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                await manager.TryToSignInAsync("whatever", null)
+            );
+
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 await manager.TryToSignInAsync("wrongLogin", "wrongPassword")
             );
