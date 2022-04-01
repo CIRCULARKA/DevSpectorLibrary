@@ -19,6 +19,8 @@ namespace DevSpector.SDK.Authorization
 
         public async Task<User> TryToSignInAsync(string login, string password)
         {
+            ThrowIfNull(login, password);
+
             var parameters = new Dictionary<string, string>() {
                 { nameof(login), login },
                 { nameof(password), password }
