@@ -5,8 +5,8 @@ namespace DevSpector.SDK.Networking
 {
 	public interface INetworkManager
 	{
-        Task GenerateIPRange(string ip, int mask);
+        Task GenerateIPRangeAsync(string ip, int mask);
 
-        Task<List<string>> GetFreeIP();
+        Task<List<string>> GetFreeIPAsync();
     }
 }
