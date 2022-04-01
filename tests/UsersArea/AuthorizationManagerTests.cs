@@ -82,12 +82,12 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             User createdUser = await GetUserByLoginAsync(targetUser.Login);
 
             // Act
-            await manager.RevokeKey(targetUser.Login, targetUser.Password);
+            string newKey = await manager.RevokeKey(targetUser.Login, targetUser.Password);
 
             User actualUser = await GetUserByLoginAsync(targetUser.Login);
 
             // Assert
-            Assert.NotEqual(createdUser.AccessToken, actualUser.AccessToken);
+            Assert.Equal(newKey, actualUser.AccessToken);
         }
 
         [Fact]
