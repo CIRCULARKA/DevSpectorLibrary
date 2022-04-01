@@ -17,14 +17,37 @@ namespace DevSpector.SDK.Networking
             _provider = provider;
         }
 
-        public Task GenerateIPRangeAsync(string networkAddress, int mask)
+        public async Task GenerateIPRangeAsync(string networkAddress, int mask)
         {
-            throw new NotImplementedException("Method not tested yet");
+            ThrowIfNull(networkAddress);
+
+            ServerResponse response = await _provider.PutAsync(
+                "api/ip/generate",
+                new LANInfo {
+                    NetworkAddress = networkAddress,
+                    Mask = mask
+                }
+            );
+
+            ThrowIfBadResponseStatus(response);
         }
 
-        public Task<List<string>> GetFreeIPAsync()
+        public async Task<List<string>> GetFreeIPAsync()
         {
-            throw new NotImplementedException("Method not tested yet");
+            ServerResponse response = await _provider.GetAsync(
+                "api/ip/free"
+            );
+
+            ThrowIfBadResponseStatus(response);
+
+            return _provider.Deserialize<List<string>>(response.ResponseContent);
+        }
+
+        private class LANInfo
+        {
+            public string NetworkAddress { get; set; }
+
+            public int Mask { get; set; }
         }
     }
 }
