@@ -24,7 +24,7 @@ namespace DevSpector.SDK.Authorization
                 { nameof(password), password }
             };
 
-            var response = await _provider.GetAsync(
+            ServerResponse response = await _provider.GetAsync(
                 path: "api/users/authorize",
                 parameters: parameters
             );
@@ -34,9 +34,22 @@ namespace DevSpector.SDK.Authorization
             return _provider.Deserialize<User>(response.ResponseContent);
         }
 
-        public Task<string> RevokeKey(string login, string password)
+        public async Task<string> RevokeKey(string login, string password)
         {
-            throw new NotImplementedException("Method not tested yet");
+            ThrowIfNull(login, password);
+
+            var parameters = new Dictionary<string, string> {
+                { "login", login }, { "password", password }
+            };
+
+            ServerResponse response = await _provider.GetAsync(
+                "api/users/revoke-key",
+                parameters
+            );
+
+            ThrowIfBadResponseStatus(response);
+
+            return _provider.Deserialize<string>(response.ResponseContent);
         }
     }
 }
