@@ -22,6 +22,14 @@ namespace DevSpector.SDK
 
         private readonly string _accessToken;
 
+        public JsonProvider(IHostBuilder builder)
+        {
+            _client = new HttpClient();
+            _builder = builder;
+
+            _serializationOptions = ConfigureSerialization();
+        }
+
         public JsonProvider(string accessToken, IHostBuilder builder)
         {
             _accessToken = accessToken;
@@ -29,12 +37,8 @@ namespace DevSpector.SDK
             _client = new HttpClient();
             _builder = builder;
 
-            _serializationOptions = new JsonSerializerOptions();
-            _serializationOptions.PropertyNameCaseInsensitive = true;
-            _serializationOptions.Encoder = JavaScriptEncoder.Create(
-                UnicodeRanges.BasicLatin,
-                UnicodeRanges.Cyrillic
-            );
+            _serializationOptions = ConfigureSerialization();
+
         }
 
         public TOut Deserialize<TOut>(string json) =>
@@ -122,7 +126,20 @@ namespace DevSpector.SDK
 
         private void AddAccessKeyToHeader(HttpRequestMessage message)
         {
-            message.Headers.Add("API", _accessToken);
+            if (_accessToken != null)
+                message.Headers.Add("API", _accessToken);
+        }
+
+        private JsonSerializerOptions ConfigureSerialization()
+        {
+            var result = new JsonSerializerOptions();
+            result.PropertyNameCaseInsensitive = true;
+            result.Encoder = JavaScriptEncoder.Create(
+                UnicodeRanges.BasicLatin,
+                UnicodeRanges.Cyrillic
+            );
+
+            return result;
         }
     }
 }
