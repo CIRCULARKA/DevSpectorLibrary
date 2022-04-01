@@ -8,7 +8,7 @@ using DevSpector.SDK.Models;
 
 namespace DevSpector.SDK.Authorization
 {
-    public class AuthorizationManager : IAuthorizationManager
+    public class AuthorizationManager : SdkTool, IAuthorizationManager
     {
         private readonly IServerDataProvider _provider;
 
@@ -19,22 +19,39 @@ namespace DevSpector.SDK.Authorization
 
         public async Task<User> TryToSignInAsync(string login, string password)
         {
+            ThrowIfNull(login, password);
+
             var parameters = new Dictionary<string, string>() {
                 { nameof(login), login },
                 { nameof(password), password }
             };
 
-            var response = await _provider.GetAsync(
+            ServerResponse response = await _provider.GetAsync(
                 path: "api/users/authorize",
                 parameters: parameters
             );
 
-            if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
-                throw new InvalidOperationException("Could not authorize on server: wrong credentials");
-            if (!response.IsSucceed)
-                throw new InvalidOperationException($"Could not authorize on server: error {response.ResponseStatusCode}");
+            ThrowIfBadResponseStatus(response);
 
             return _provider.Deserialize<User>(response.ResponseContent);
+        }
+
+        public async Task<string> RevokeKey(string login, string password)
+        {
+            ThrowIfNull(login, password);
+
+            var parameters = new Dictionary<string, string> {
+                { "login", login }, { "password", password }
+            };
+
+            ServerResponse response = await _provider.GetAsync(
+                "api/users/revoke-key",
+                parameters
+            );
+
+            ThrowIfBadResponseStatus(response);
+
+            return response.ResponseContent;
         }
     }
 }
