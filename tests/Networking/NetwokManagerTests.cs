@@ -71,14 +71,6 @@ namespace DevSpector.Tests.Common.SDK.Networking
             await Assert.ThrowsAsync<UnauthorizedException>(
                 () => manager.GenerateIPRangeAsync("whatever", 0)
             );
-
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GenerateIPRangeAsync("198.30.1.1", -1)
-            );
-
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                () => manager.GenerateIPRangeAsync("wrongNetworkMask", 24)
-            );
         }
 
 		private async Task<INetworkManager> CreateNetworkManagerAsync(bool useWrongAccessKey = false)
@@ -86,6 +78,7 @@ namespace DevSpector.Tests.Common.SDK.Networking
             User superUser = await _connectionFixture.GetSuperUser();
 
 			IServerDataProvider provider = new JsonProvider(
+                useWrongAccessKey ? "wrongKey" : superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,
 					scheme: "https"
