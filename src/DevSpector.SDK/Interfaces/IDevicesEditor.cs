@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
 
-namespace DevSpector.SDK
+namespace DevSpector.SDK.Editors
 {
 	public interface IDevicesEditor
 	{

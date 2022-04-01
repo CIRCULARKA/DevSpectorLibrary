@@ -8,6 +8,7 @@ using Xunit;
 using DevSpector.SDK;
 using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
+using DevSpector.SDK.Editors;
 using DevSpector.SDK.Exceptions;
 
 namespace DevSpector.Tests.SDK

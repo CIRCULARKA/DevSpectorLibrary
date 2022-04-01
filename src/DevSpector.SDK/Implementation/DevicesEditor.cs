@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
+using DevSpector.SDK.Editors;
 
 namespace DevSpector.SDK
 {

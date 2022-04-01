@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using DevSpector.SDK.Models;
 
-namespace DevSpector.SDK
+namespace DevSpector.SDK.Providers
 {
 	public interface IDevicesProvider
 	{
