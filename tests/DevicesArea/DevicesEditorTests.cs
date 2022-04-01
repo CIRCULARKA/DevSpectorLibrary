@@ -40,7 +40,7 @@ namespace DevSpector.Tests.SDK
 			};
 
 			// Act
-			await editor.CreateDevice(expectedDevice);
+			await editor.CreateDeviceAsync(expectedDevice);
 
 			List<Device> actualDevices = await GetDevicesAsync();
 
@@ -67,13 +67,13 @@ namespace DevSpector.Tests.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => editor.CreateDevice(new DeviceToCreate {
+				() => editor.CreateDeviceAsync(new DeviceToCreate {
 					InventoryNumber = Guid.NewGuid().ToString()
 				})
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.CreateDevice(null)
+				() => editor.CreateDeviceAsync(null)
 			);
 		}
 
@@ -86,7 +86,7 @@ namespace DevSpector.Tests.SDK
 			var targetDevice = await CreateNewDeviceOnServerAsync();
 
 			// Act
-			await editor.DeleteDevice(targetDevice.InventoryNumber);
+			await editor.DeleteDeviceAsync(targetDevice.InventoryNumber);
 
 			List<Device> actualDevices = await GetDevicesAsync();
 
@@ -112,11 +112,11 @@ namespace DevSpector.Tests.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => editor.DeleteDevice(targetDevice.InventoryNumber)
+				() => editor.DeleteDeviceAsync(targetDevice.InventoryNumber)
 			);
 
 			await Assert.ThrowsAsync<InvalidOperationException>(
-				() => validEditor.DeleteDevice("wrong inv numv")
+				() => validEditor.DeleteDeviceAsync("wrong inv numv")
 			);
 		}
 
@@ -139,7 +139,7 @@ namespace DevSpector.Tests.SDK
 			};
 
 			// Act
-			await editor.UpdateDevice(newDevice.InventoryNumber, expectedDevice);
+			await editor.UpdateDeviceAsync(newDevice.InventoryNumber, expectedDevice);
 
 			Device actualDevice = await GetDeviceAsync(expectedDevice.InventoryNumber);
 
@@ -163,15 +163,15 @@ namespace DevSpector.Tests.SDK
 
 			// Act
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => editorWithInvalidKey.UpdateDevice("invnumb", new DeviceToCreate())
+				() => editorWithInvalidKey.UpdateDeviceAsync("invnumb", new DeviceToCreate())
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editorWithInvalidKey.UpdateDevice(null, new DeviceToCreate())
+				() => editorWithInvalidKey.UpdateDeviceAsync(null, new DeviceToCreate())
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editorWithInvalidKey.UpdateDevice("invnum", null)
+				() => editorWithInvalidKey.UpdateDeviceAsync("invnum", null)
 			);
 		}
 
@@ -189,7 +189,7 @@ namespace DevSpector.Tests.SDK
 			};
 
 			// Act
-			await editor.AddSoftware(targetDevice.InventoryNumber, expectedSoftware);
+			await editor.AddSoftwareAsync(targetDevice.InventoryNumber, expectedSoftware);
 
 			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
 
@@ -212,19 +212,19 @@ namespace DevSpector.Tests.SDK
 
 			// Act
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => editor.AddSoftware("whatever", new Software { SoftwareName = "whatever" })
+				() => editor.AddSoftwareAsync("whatever", new Software { SoftwareName = "whatever" })
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.AddSoftware("whatever", new Software())
+				() => editor.AddSoftwareAsync("whatever", new Software())
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.AddSoftware("whatever", null)
+				() => editor.AddSoftwareAsync("whatever", null)
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.AddSoftware(null, new Software { SoftwareName = "whatever" })
+				() => editor.AddSoftwareAsync(null, new Software { SoftwareName = "whatever" })
 			);
 		}
 
@@ -263,8 +263,8 @@ namespace DevSpector.Tests.SDK
 
 			// Act
 			// Should delete software and all its versions
-			await editor.RemoveSoftware(targetDevice.InventoryNumber, new Software { SoftwareName = firstSoft.SoftwareName });
-			await editor.RemoveSoftware(targetDevice.InventoryNumber, thirdSoft);
+			await editor.RemoveSoftwareAsync(targetDevice.InventoryNumber, new Software { SoftwareName = firstSoft.SoftwareName });
+			await editor.RemoveSoftwareAsync(targetDevice.InventoryNumber, thirdSoft);
 
 			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
 
@@ -285,15 +285,15 @@ namespace DevSpector.Tests.SDK
 
 			// Act
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => editor.RemoveSoftware("whatever", new Software { SoftwareName = "whatever" })
+				() => editor.RemoveSoftwareAsync("whatever", new Software { SoftwareName = "whatever" })
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.RemoveSoftware(null, new Software { SoftwareName = "whatever" })
+				() => editor.RemoveSoftwareAsync(null, new Software { SoftwareName = "whatever" })
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.RemoveSoftware("whatever", new Software())
+				() => editor.RemoveSoftwareAsync("whatever", new Software())
 			);
 		}
 
@@ -308,7 +308,7 @@ namespace DevSpector.Tests.SDK
 			var freeIP = await GetFreeIPAsync();
 
 			// Act
-			await editor.AssignIP(targetDevice.InventoryNumber, freeIP);
+			await editor.AssignIPAsync(targetDevice.InventoryNumber, freeIP);
 
 			Device actualDevice = await GetDeviceAsync(targetDevice.InventoryNumber);
 
@@ -330,15 +330,15 @@ namespace DevSpector.Tests.SDK
 
 			// Act
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => editor.AssignIP("whatever", "whatever")
+				() => editor.AssignIPAsync("whatever", "whatever")
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.AssignIP(null, "whatever")
+				() => editor.AssignIPAsync(null, "whatever")
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => editor.AssignIP("whatever", null)
+				() => editor.AssignIPAsync("whatever", null)
 			);
 		}
 
@@ -355,7 +355,7 @@ namespace DevSpector.Tests.SDK
 			await AddIPToDeviceAsync(newDevice.InventoryNumber, targetIP);
 
 			// Act
-			await editor.RemoveIP(newDevice.InventoryNumber, targetIP);
+			await editor.RemoveIPAsync(newDevice.InventoryNumber, targetIP);
 
 			Device actualDevice = await GetDeviceAsync(newDevice.InventoryNumber);
 
@@ -376,15 +376,15 @@ namespace DevSpector.Tests.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => invalidEditor.RemoveIP("whatever", "whatever")
+				() => invalidEditor.RemoveIPAsync("whatever", "whatever")
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.RemoveIP(null, "whatever")
+				() => invalidEditor.RemoveIPAsync(null, "whatever")
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.RemoveIP("whatever", null)
+				() => invalidEditor.RemoveIPAsync("whatever", null)
 			);
 		}
 
@@ -407,7 +407,7 @@ namespace DevSpector.Tests.SDK
 			Cabinet expectedCabinet = cabinets.FirstOrDefault();
 
 			// Act
-			await editor.Move(
+			await editor.MoveAsync(
 				targetDevice.InventoryNumber,
 				expectedCabinet.CabinetID
 			);
@@ -432,15 +432,15 @@ namespace DevSpector.Tests.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => invalidEditor.Move("whatever", "whatever")
+				() => invalidEditor.MoveAsync("whatever", "whatever")
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.Move(null, "whatever")
+				() => invalidEditor.MoveAsync(null, "whatever")
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.RemoveIP("whatever", null)
+				() => invalidEditor.RemoveIPAsync("whatever", null)
 			);
 		}
 

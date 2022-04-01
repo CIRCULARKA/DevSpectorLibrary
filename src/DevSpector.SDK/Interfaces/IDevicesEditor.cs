@@ -6,20 +6,20 @@ namespace DevSpector.SDK
 {
 	public interface IDevicesEditor
 	{
-		Task CreateDevice(DeviceToCreate deviceInfo);
+		Task CreateDeviceAsync(DeviceToCreate deviceInfo);
 
-		Task DeleteDevice(string inventoryNumber);
+		Task DeleteDeviceAsync(string inventoryNumber);
 
-		Task UpdateDevice(string targetInventoryNumber, DeviceToCreate deviceInfo);
+		Task UpdateDeviceAsync(string targetInventoryNumber, DeviceToCreate deviceInfo);
 
-		Task AssignIP(string inventoryNumber, string ipAddress);
+		Task AssignIPAsync(string inventoryNumber, string ipAddress);
 
-		Task RemoveIP(string inventoryNumber, string ipAddress);
+		Task RemoveIPAsync(string inventoryNumber, string ipAddress);
 
-		Task AddSoftware(string inventoryNumber, Software softwareInfo);
+		Task AddSoftwareAsync(string inventoryNumber, Software softwareInfo);
 
-		Task RemoveSoftware(string inventoryNumber, Software softwareInfo);
+		Task RemoveSoftwareAsync(string inventoryNumber, Software softwareInfo);
 
-		Task Move(string inventoryNumber, string cabinetID);
+		Task MoveAsync(string inventoryNumber, string cabinetID);
 	}
 }

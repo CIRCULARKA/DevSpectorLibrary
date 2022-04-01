@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Net;
-using DevSpector.SDK.Exceptions;
 using DevSpector.SDK.DTO;
 using DevSpector.SDK.Models;
 
@@ -15,7 +13,7 @@ namespace DevSpector.SDK
         public DevicesEditor(IServerDataProvider provider) =>
             _provider = provider;
 
-		public async Task CreateDevice(DeviceToCreate deviceInfo)
+		public async Task CreateDeviceAsync(DeviceToCreate deviceInfo)
 		{
             ThrowIfNull(deviceInfo);
 
@@ -27,7 +25,7 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
 		}
 
-		public async Task DeleteDevice(string inventoryNumber)
+		public async Task DeleteDeviceAsync(string inventoryNumber)
         {
             ThrowIfNull(inventoryNumber);
 
@@ -41,7 +39,7 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
-        public async Task UpdateDevice(string targetInventoryNumber, DeviceToCreate deviceInfo)
+        public async Task UpdateDeviceAsync(string targetInventoryNumber, DeviceToCreate deviceInfo)
         {
             ThrowIfNull(targetInventoryNumber, deviceInfo);
 
@@ -54,7 +52,7 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
-        public async Task AssignIP(string inventoryNumber, string ipAddress)
+        public async Task AssignIPAsync(string inventoryNumber, string ipAddress)
         {
             ThrowIfNull(inventoryNumber, ipAddress);
 
@@ -67,7 +65,7 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
-		public async Task RemoveIP(string inventoryNumber, string ipAddress)
+		public async Task RemoveIPAsync(string inventoryNumber, string ipAddress)
         {
             ThrowIfNull(inventoryNumber, ipAddress);
 
@@ -80,7 +78,7 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
-		public async Task AddSoftware(string inventoryNumber, Software softwareInfo)
+		public async Task AddSoftwareAsync(string inventoryNumber, Software softwareInfo)
         {
             ThrowIfNull(inventoryNumber, softwareInfo);
 
@@ -96,7 +94,7 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
-		public async Task RemoveSoftware(string inventoryNumber, Software softwareInfo)
+		public async Task RemoveSoftwareAsync(string inventoryNumber, Software softwareInfo)
         {
             ThrowIfNull(inventoryNumber, softwareInfo);
 
@@ -112,7 +110,7 @@ namespace DevSpector.SDK
             ThrowIfBadResponseStatus(response);
         }
 
-        public async Task Move(string inventoryNumber, string cabinetID)
+        public async Task MoveAsync(string inventoryNumber, string cabinetID)
         {
             ThrowIfNull(inventoryNumber, cabinetID);
 

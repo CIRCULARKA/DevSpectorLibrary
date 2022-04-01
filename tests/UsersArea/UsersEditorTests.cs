@@ -41,7 +41,7 @@ namespace DevSpector.Tests.Server.SDK
 			};
 
 			// Act
-			await editor.CreateUser(expectedUser);
+			await editor.CreateUserAsync(expectedUser);
 
 			User actualUser = await GetUserFromServerAsync(expectedUser.Login);
 
@@ -62,7 +62,7 @@ namespace DevSpector.Tests.Server.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => invalidEditor.CreateUser(new UserToCreate() {
+				() => invalidEditor.CreateUserAsync(new UserToCreate() {
 					Login = "whatever",
 					Password = "whatever",
 					GroupID = "whatever"
@@ -70,25 +70,25 @@ namespace DevSpector.Tests.Server.SDK
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.CreateUser(null)
+				() => invalidEditor.CreateUserAsync(null)
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.CreateUser(new UserToCreate {
+				() => invalidEditor.CreateUserAsync(new UserToCreate {
 					Login = "whatever",
 					Password = "whatever"
 				})
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.CreateUser(new UserToCreate {
+				() => invalidEditor.CreateUserAsync(new UserToCreate {
 					Password = "whatever",
 					GroupID = "whatever"
 				})
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.CreateUser(new UserToCreate {
+				() => invalidEditor.CreateUserAsync(new UserToCreate {
 					Login = "whatever",
 					GroupID = "whatever"
 				})
@@ -104,7 +104,7 @@ namespace DevSpector.Tests.Server.SDK
 			UserToCreate targetUser = await CreateUserOnServerAsync();
 
 			// Act
-			await editor.DeleteUser(targetUser.Login);
+			await editor.DeleteUserAsync(targetUser.Login);
 
 			User shouldBeNull = await GetUserFromServerAsync(targetUser.Login);
 
@@ -122,11 +122,11 @@ namespace DevSpector.Tests.Server.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => invalidEditor.DeleteUser("whatever")
+				() => invalidEditor.DeleteUserAsync("whatever")
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.DeleteUser(null)
+				() => invalidEditor.DeleteUserAsync(null)
 			);
 		}
 
@@ -146,7 +146,7 @@ namespace DevSpector.Tests.Server.SDK
 			};
 
 			// Act
-			await editor.UpdateUser(targetUser.Login, expectedUser);
+			await editor.UpdateUserAsync(targetUser.Login, expectedUser);
 
 			User actualUser = await GetUserFromServerAsync(expectedUser.Login);
 
@@ -168,15 +168,15 @@ namespace DevSpector.Tests.Server.SDK
 
 			// Assert
 			await Assert.ThrowsAsync<UnauthorizedException>(
-				() => invalidEditor.UpdateUser("whatever", new UserToCreate())
+				() => invalidEditor.UpdateUserAsync("whatever", new UserToCreate())
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.UpdateUser(null, new UserToCreate())
+				() => invalidEditor.UpdateUserAsync(null, new UserToCreate())
 			);
 
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				() => invalidEditor.UpdateUser("whatever", null)
+				() => invalidEditor.UpdateUserAsync("whatever", null)
 			);
 		}
 

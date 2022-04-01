@@ -81,7 +81,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         }
 
         [Fact]
-        public async Task CanRevokeKey()
+        public async Task CanRevokeKeyAsync()
         {
             // Arrange
             IAuthorizationManager manager = CreateAuthManager();
@@ -90,7 +90,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             User createdUser = await GetUserByLoginAsync(targetUser.Login);
 
             // Act
-            string newKey = await manager.RevokeKey(targetUser.Login, targetUser.Password);
+            string newKey = await manager.RevokeKeyAsync(targetUser.Login, targetUser.Password);
 
             User actualUser = await GetUserByLoginAsync(targetUser.Login);
 
@@ -99,7 +99,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         }
 
         [Fact]
-        public async Task CantRevokeKey()
+        public async Task CantRevokeKeyAsync()
         {
             // Arrange
             IAuthorizationManager manager = CreateAuthManager();
@@ -108,23 +108,23 @@ namespace DevSpector.Tests.Common.SDK.Authorization
 
             // Assert
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => manager.RevokeKey("whatever", null)
+                () => manager.RevokeKeyAsync("whatever", null)
             );
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => manager.RevokeKey(null, "whatever")
+                () => manager.RevokeKeyAsync(null, "whatever")
             );
 
             await Assert.ThrowsAsync<UnauthorizedException>(
-                () => manager.RevokeKey(targetUser.Login, "wrongPassword")
+                () => manager.RevokeKeyAsync(targetUser.Login, "wrongPassword")
             );
 
             await Assert.ThrowsAsync<UnauthorizedException>(
-                () => manager.RevokeKey("wrongLogin", "wrongPassword")
+                () => manager.RevokeKeyAsync("wrongLogin", "wrongPassword")
             );
 
             await Assert.ThrowsAsync<UnauthorizedException>(
-                () => manager.RevokeKey("wrongLogin", targetUser.Password)
+                () => manager.RevokeKeyAsync("wrongLogin", targetUser.Password)
             );
 
             // Clean
