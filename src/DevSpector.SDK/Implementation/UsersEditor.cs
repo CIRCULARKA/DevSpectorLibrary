@@ -14,7 +14,7 @@ namespace DevSpector.SDK.Editors
             _provider = provider;
         }
 
-        public async Task CreateUser(UserToCreate userInfo)
+        public async Task CreateUserAsync(UserToCreate userInfo)
         {
             ThrowIfNull(userInfo, userInfo?.Login, userInfo?.Password, userInfo?.GroupID);
 
@@ -26,7 +26,7 @@ namespace DevSpector.SDK.Editors
             ThrowIfBadResponseStatus(response);
         }
 
-        public async Task DeleteUser(string login)
+        public async Task DeleteUserAsync(string login)
         {
             ThrowIfNull(login);
 
@@ -38,7 +38,7 @@ namespace DevSpector.SDK.Editors
             ThrowIfBadResponseStatus(response);
         }
 
-        public async Task UpdateUser(string targetLogin, UserToCreate newUserInfo)
+        public async Task UpdateUserAsync(string targetLogin, UserToCreate newUserInfo)
         {
             ThrowIfNull(targetLogin, newUserInfo);
 

@@ -5,10 +5,10 @@ namespace DevSpector.SDK.Editors
 {
     public interface IUsersEditor
     {
-        Task CreateUser(UserToCreate userInfo);
+        Task CreateUserAsync(UserToCreate userInfo);
 
-        Task DeleteUser(string login);
+        Task DeleteUserAsync(string login);
 
-        Task UpdateUser(string targetLogin, UserToCreate newUserInfo);
+        Task UpdateUserAsync(string targetLogin, UserToCreate newUserInfo);
     }
 }

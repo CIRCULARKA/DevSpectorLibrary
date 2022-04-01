@@ -1,10 +1,10 @@
-using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Xunit;
 using DevSpector.SDK;
 using DevSpector.SDK.Models;
 using DevSpector.SDK.Exceptions;
+using DevSpector.SDK.Providers;
 
 namespace DevSpector.Tests.Server.SDK
 {

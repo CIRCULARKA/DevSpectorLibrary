@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using DevSpector.SDK.Models;
+using DevSpector.SDK.Providers;
 
 namespace DevSpector.SDK
 {
