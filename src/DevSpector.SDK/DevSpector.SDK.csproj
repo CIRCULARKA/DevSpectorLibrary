@@ -11,7 +11,7 @@
   <PropertyGroup>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageId>DevSpectorLibrary</PackageId>
-    <Version>1.0.15</Version>
+    <Version>1.0.17</Version>
     <Authors>CIRCULARKA</Authors>
     <Company>CIRCULARKA</Company>
   </PropertyGroup>
