@@ -20,7 +20,7 @@ namespace DevSpector.SDK
 
         private readonly JsonSerializerOptions _serializationOptions;
 
-        private readonly string _accessToken;
+        private string _accessToken;
 
         public JsonProvider(IHostBuilder builder)
         {
@@ -40,10 +40,10 @@ namespace DevSpector.SDK
             _serializationOptions = ConfigureSerialization();
         }
 
-        public string AccessToken { get; private set; }
+        public string AccessToken => _accessToken;
 
         public void ChangeAccessToken(string newToken) =>
-            AccessToken = newToken;
+            _accessToken = newToken;
 
         public TOut Deserialize<TOut>(string json) =>
             JsonSerializer.Deserialize<TOut>(json, _serializationOptions);
