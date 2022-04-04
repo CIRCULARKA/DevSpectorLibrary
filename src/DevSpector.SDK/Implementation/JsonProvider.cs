@@ -38,8 +38,12 @@ namespace DevSpector.SDK
             _builder = builder;
 
             _serializationOptions = ConfigureSerialization();
-
         }
+
+        public string AccessToken { get; private set; }
+
+        public void ChangeAccessToken(string newToken) =>
+            AccessToken = newToken;
 
         public TOut Deserialize<TOut>(string json) =>
             JsonSerializer.Deserialize<TOut>(json, _serializationOptions);

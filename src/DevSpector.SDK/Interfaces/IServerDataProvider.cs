@@ -6,6 +6,10 @@ namespace DevSpector.SDK
 {
 	public interface IServerDataProvider
 	{
+		string AccessToken { get; }
+
+		void ChangeAccessToken(string newToken);
+
         TOut Deserialize<TOut>(string json);
 
         string Serialize<T>(T obj);
