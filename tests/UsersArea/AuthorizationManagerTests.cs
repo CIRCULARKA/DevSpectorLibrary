@@ -56,11 +56,11 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             UserToCreate targetUser = await CreateUserOnServerAsync();
 
             // Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 await manager.TryToSignInAsync(null, "whatever")
             );
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 await manager.TryToSignInAsync("whatever", null)
             );
 
@@ -107,11 +107,11 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             UserToCreate targetUser = await CreateUserOnServerAsync();
 
             // Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<UnauthorizedException>(
                 () => manager.RevokeKeyAsync("whatever", null)
             );
 
-            await Assert.ThrowsAsync<ArgumentNullException>(
+            await Assert.ThrowsAsync<UnauthorizedException>(
                 () => manager.RevokeKeyAsync(null, "whatever")
             );
 

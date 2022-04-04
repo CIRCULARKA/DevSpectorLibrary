@@ -1,8 +1,4 @@
-using System;
-using System.Text.Json;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DevSpector.SDK.Models;
 
@@ -19,11 +15,9 @@ namespace DevSpector.SDK.Authorization
 
         public async Task<User> TryToSignInAsync(string login, string password)
         {
-            ThrowIfNull(login, password);
-
             var parameters = new Dictionary<string, string>() {
-                { nameof(login), login },
-                { nameof(password), password }
+                { "login", login == null ? "_" : login },
+                { "password", password == null ? "_" : password }
             };
 
             ServerResponse response = await _provider.GetAsync(
@@ -38,10 +32,9 @@ namespace DevSpector.SDK.Authorization
 
         public async Task<string> RevokeKeyAsync(string login, string password)
         {
-            ThrowIfNull(login, password);
-
             var parameters = new Dictionary<string, string> {
-                { "login", login }, { "password", password }
+                { "login", login == null ? "_" : login },
+                { "password", password == null ? "_" : password }
             };
 
             ServerResponse response = await _provider.GetAsync(
