@@ -27,7 +27,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CanGetUser()
         {
             // Arrange
-            var manager = CreateAuthManager();
+            var manager = await CreateAuthManagerAsync();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
             User createdTargetUser = await GetUserByLoginAsync(targetUser.Login);
@@ -51,7 +51,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CantGetUser()
         {
             // Arrange
-            var manager = CreateAuthManager();
+            var manager = await CreateAuthManagerAsync();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
 
@@ -84,7 +84,7 @@ namespace DevSpector.Tests.Common.SDK.Authorization
         public async Task CanRevokeKeyAsync()
         {
             // Arrange
-            IAuthorizationManager manager = CreateAuthManager();
+            IAuthorizationManager manager = await CreateAuthManagerAsync();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
             User createdUser = await GetUserByLoginAsync(targetUser.Login);
@@ -96,13 +96,16 @@ namespace DevSpector.Tests.Common.SDK.Authorization
 
             // Assert
             Assert.Equal(newKey, actualUser.AccessToken);
+
+            // Clean
+            await DeleteUserAsync(targetUser.Login);
         }
 
         [Fact]
         public async Task CantRevokeKeyAsync()
         {
             // Arrange
-            IAuthorizationManager manager = CreateAuthManager();
+            IAuthorizationManager manager = await CreateAuthManagerAsync();
 
             UserToCreate targetUser = await CreateUserOnServerAsync();
 
@@ -131,9 +134,71 @@ namespace DevSpector.Tests.Common.SDK.Authorization
             await DeleteUserAsync(targetUser.Login);
         }
 
-		private IAuthorizationManager CreateAuthManager(bool useWrongAccessKey = false)
+        [Fact]
+        public async Task CanChangePassword()
+        {
+            // Arrange
+            IAuthorizationManager manager = await CreateAuthManagerAsync();
+
+            UserToCreate targetUser = await CreateUserOnServerAsync();
+
+            // Act
+            await manager.ChangePasswordAsync(
+                targetUser.Login,
+                targetUser.Password,
+                Guid.NewGuid().ToString()
+            );
+
+            // Assert
+            Assert.False(await CanAuthorize(targetUser, targetUser.Password));
+
+            // Clean
+            await DeleteUserAsync(targetUser.Login);
+        }
+
+        [Fact]
+        public async Task CantChangePassword()
+        {
+            // Arrange
+            IAuthorizationManager validManager = await CreateAuthManagerAsync();
+            IAuthorizationManager invalidManager = await CreateAuthManagerAsync(
+                useWrongAccessKey: true
+            );
+
+            UserToCreate targetUser = await CreateUserOnServerAsync();
+
+            // Assert
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await invalidManager.ChangePasswordAsync("whatever", "whatever", "whatever")
+            );
+
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await invalidManager.ChangePasswordAsync(targetUser.Login, targetUser.Password, Guid.NewGuid().ToString())
+            );
+
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await validManager.ChangePasswordAsync(targetUser.Login, "wrongPwd", Guid.NewGuid().ToString())
+            );
+
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await validManager.ChangePasswordAsync("wrongLogin", targetUser.Password, Guid.NewGuid().ToString())
+            );
+
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await validManager.ChangePasswordAsync(null, targetUser.Password, Guid.NewGuid().ToString())
+            );
+
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                async () => await validManager.ChangePasswordAsync(targetUser.Login, null, Guid.NewGuid().ToString())
+            );
+        }
+
+		private async Task<IAuthorizationManager> CreateAuthManagerAsync(bool useWrongAccessKey = false)
 		{
+            User superUser = await _connectionFixture.GetSuperUser();
+
 			IServerDataProvider provider = new JsonProvider(
+                useWrongAccessKey ? "wrongKey" : superUser.AccessToken,
 				new HostBuilder(
 					hostname: _connectionFixture.ServerHostname,
 					scheme: "https"
@@ -188,6 +253,17 @@ namespace DevSpector.Tests.Common.SDK.Authorization
 
             if (code != HttpStatusCode.OK)
                 throw new InvalidOperationException();
+        }
+
+        private async Task<bool> CanAuthorize(UserToCreate user, string password)
+        {
+            string result = await _connectionFixture.GetFromServerAsync(
+                "users/authorize",
+                new Dictionary<string, string> { { "login", user.Login }, { "password", password } }
+            );
+
+            // Ultimate error detection 3000!
+            return !result.Contains("error");
         }
     }
 }
