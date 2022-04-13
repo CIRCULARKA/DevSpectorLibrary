@@ -44,6 +44,20 @@ namespace DevSpector.Tests
             return DeserializeJson<T>(responseContent);
         }
 
+        public async Task<string> GetFromServerAsync(
+            string path,
+            Dictionary<string, string> parameters = null,
+            Dictionary<string, string> headers = null
+        )
+        {
+            var request = await ConstructRequestMessage(path, HttpMethod.Get, parameters, headers);
+
+            var response = await _client.SendAsync(request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            return responseContent;
+        }
+
         public async Task<HttpStatusCode> SendChangesToServerAsync<T>(
             string path,
             T obj,

@@ -46,5 +46,21 @@ namespace DevSpector.SDK.Authorization
 
             return response.ResponseContent;
         }
+
+        public async Task ChangePasswordAsync(string login, string currentPassword, string newPassword)
+        {
+            var parameters = new Dictionary<string, string> {
+                { "login", login == null ? "_" : login },
+                { "currentPassword", currentPassword == null ? "_" : currentPassword },
+                { "newPassword", newPassword == null ? "_" : newPassword }
+            };
+
+            ServerResponse response = await _provider.GetAsync(
+                "api/users/change-pwd",
+                parameters
+            );
+
+            ThrowIfBadResponseStatus(response);
+        }
     }
 }

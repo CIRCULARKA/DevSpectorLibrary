@@ -8,5 +8,7 @@ namespace DevSpector.SDK.Authorization
         Task<User> TryToSignInAsync(string login, string password);
 
         Task<string> RevokeKeyAsync(string login, string password);
+
+        Task ChangePasswordAsync(string login, string currentPassword, string newPassword);
     }
 }
