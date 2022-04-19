@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
@@ -5,6 +6,12 @@ namespace DevSpector.SDK.DTO
 {
     public class ServerError
     {
+        public ServerError(string error, IEnumerable<string> description)
+        {
+            Error = error;
+            Description = description.ToList();
+        }
+
         public string Error { get; }
 
         public List<string> Description { get; }
