@@ -6,10 +6,10 @@ namespace DevSpector.SDK.DTO
 {
     public class ServerError
     {
-        public ServerError(string error, IEnumerable<string> description)
+        public ServerError(string error, List<string> description)
         {
             Error = error;
-            Description = description?.ToList();
+            Description = description;
         }
 
         public string Error { get; }
