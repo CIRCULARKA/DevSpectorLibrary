@@ -16,7 +16,9 @@ namespace DevSpector.SDK.Models
 
         public string ResponseContent { get; }
 
-        public ServerError GetError()
+        public ServerError ServerError => GetError();
+
+        private ServerError GetError()
         {
             if (IsSucceed) return null;
 
