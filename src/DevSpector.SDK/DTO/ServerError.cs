@@ -9,7 +9,7 @@ namespace DevSpector.SDK.DTO
         public ServerError(string error, IEnumerable<string> description)
         {
             Error = error;
-            Description = description.ToList();
+            Description = description?.ToList();
         }
 
         public string Error { get; }
