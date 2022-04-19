@@ -140,6 +140,7 @@ namespace DevSpector.Tests.Server.SDK
 
 			var expectedUser = new UserToCreate {
 				Login = Guid.NewGuid().ToString(),
+				Password = Guid.NewGuid().ToString(),
 				FirstName = Guid.NewGuid().ToString(),
 				Surname = Guid.NewGuid().ToString(),
 				Patronymic = Guid.NewGuid().ToString()
