@@ -16,9 +16,9 @@ namespace DevSpector.SDK
         protected void ThrowIfBadResponseStatus(ServerResponse response)
         {
             if (response.ResponseStatusCode == HttpStatusCode.Unauthorized)
-                throw new UnauthorizedException($"Could not proceed operation: no access");
+                throw new UnauthorizedException($"{response.ServerError.Error}: {response.ServerError.GetCommaSeparatedDescription()}");
             if (!response.IsSucceed)
-                throw new InvalidOperationException($"Could not proceed operation: {response.ResponseStatusCode} ({(int)response.ResponseStatusCode})");
+                throw new InvalidOperationException($"{response.ServerError.Error}: {response.ServerError.GetCommaSeparatedDescription()}");
         }
     }
 }
