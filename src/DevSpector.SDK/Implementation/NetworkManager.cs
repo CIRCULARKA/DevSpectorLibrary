@@ -31,7 +31,8 @@ namespace DevSpector.SDK.Networking
         public async Task<List<string>> GetFreeIPAsync()
         {
             ServerResponse response = await _provider.GetAsync(
-                "api/ip/free"
+                "api/ip/free",
+                new Dictionary<string, string> { { "sorted", "true" } }
             );
 
             ThrowIfBadResponseStatus(response);

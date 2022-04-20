@@ -90,7 +90,8 @@ namespace DevSpector.Tests.Common.SDK.Networking
 
         private async Task<List<string>> GetFreeIP() =>
             await _connectionFixture.GetFromServerAsync<List<string>>(
-                "ip/free"
+                "ip/free",
+                new Dictionary<string, string> { { "sorted", "true" } }
             );
     }
 }
