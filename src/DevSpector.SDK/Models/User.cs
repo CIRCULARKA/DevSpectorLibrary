@@ -6,6 +6,7 @@ namespace DevSpector.SDK.Models
 	public class User
 	{
 		public User(
+			string id,
 			string accessToken,
 			string login,
 			string group,
@@ -14,6 +15,7 @@ namespace DevSpector.SDK.Models
 			string patronymic
 		)
 		{
+			ID = id;
 			AccessToken = accessToken;
 			Login = login;
 			Group = group;
@@ -21,6 +23,8 @@ namespace DevSpector.SDK.Models
 			Surname	 = surname;
 			Patronymic = patronymic;
 		}
+
+		public string ID { get; }
 
 		public string AccessToken { get; }
 
